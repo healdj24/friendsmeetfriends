@@ -139,6 +139,7 @@ export default function NYC() {
   const cardRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const tvRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   // Calculate velocity with linear interpolation from mobile to desktop
   useEffect(() => {
@@ -349,12 +350,17 @@ export default function NYC() {
     >
       {/* Video Background */}
       <video
+        ref={videoRef}
         autoPlay
         loop
         muted
         playsInline
         preload="auto"
         poster="/casey-poster.jpg"
+        onCanPlay={() => {
+          // Ensure video plays even if autoplay was blocked
+          videoRef.current?.play().catch(() => {});
+        }}
         style={{
           position: 'absolute',
           top: '50%',
