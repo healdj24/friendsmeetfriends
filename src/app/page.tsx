@@ -233,72 +233,50 @@ export default function NYC() {
         <source src="/casey.mp4" type="video/mp4" />
       </video>
 
-      {/* Snowfall Forecast Banner */}
+      {/* Snowfall Popup - behind bouncing card, in front of video */}
       {showSnowfall && (
         <div
           style={{
             position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            zIndex: 10,
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 5,
             backgroundColor: 'rgba(255, 255, 248, 0.95)',
-            borderBottom: '3px solid #000099',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-            padding: isMobile ? '8px' : '12px',
+            border: '3px solid #000099',
+            boxShadow: '4px 4px 0px #000099',
+            padding: isMobile ? '12px' : '16px',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: '8px',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', maxWidth: '600px' }}>
-            <span
-              style={{
-                fontSize: isMobile ? '10px' : '12px',
-                fontWeight: 'bold',
-                color: '#000099',
-                fontFamily: "Georgia, 'Times New Roman', Times, serif",
-                textTransform: 'uppercase',
-                letterSpacing: '0.1em',
-              }}
-            >
-              ❄️ NYC Snowfall Forecast
-            </span>
-            <button
-              onClick={() => setShowSnowfall(false)}
-              style={{
-                background: 'none',
-                border: 'none',
-                fontSize: '16px',
-                cursor: 'pointer',
-                padding: '0 4px',
-              }}
-              title="Close"
-            >
-              ✕
-            </button>
-          </div>
-          <img
-            src={`https://www.weather.gov/images/okx/winter/StormTotalSnowWeb.png?t=${imageTimestamp}`}
-            alt="NYC Expected Snowfall Forecast"
+          <button
+            onClick={() => setShowSnowfall(false)}
             style={{
-              maxWidth: '100%',
-              width: isMobile ? '100%' : '500px',
+              position: 'absolute',
+              top: '8px',
+              right: '8px',
+              background: 'none',
+              border: 'none',
+              fontSize: '18px',
+              cursor: 'pointer',
+              padding: '0 4px',
+              color: '#666',
+            }}
+            title="Close"
+          >
+            ✕
+          </button>
+          <img
+            src={`https://www.weather.gov/images/okx/winter/SnowAmt6hr1.jpg?t=${imageTimestamp}`}
+            alt="Expected Snowfall"
+            style={{
+              maxWidth: isMobile ? '85vw' : '500px',
               height: 'auto',
               borderRadius: '4px',
-              border: '1px solid #ccc',
             }}
           />
-          <span
-            style={{
-              fontSize: isMobile ? '8px' : '10px',
-              color: '#666',
-              fontFamily: 'Verdana, Arial, sans-serif',
-            }}
-          >
-            Source: NWS New York • Updates hourly
-          </span>
         </div>
       )}
 
@@ -313,6 +291,7 @@ export default function NYC() {
           position: 'absolute',
           left: position.x,
           top: position.y,
+          zIndex: 10,
           textAlign: 'center',
           padding: cardPadding,
           backgroundColor: cornerHit ? '#FFD700' : 'rgba(255, 255, 248, 0.95)',
