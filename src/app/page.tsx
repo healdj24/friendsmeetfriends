@@ -2,42 +2,25 @@
 
 import { useState } from 'react';
 
-// Hand-drawn smiley face SVG - looks like dry-erase marker on whiteboard
+// Hand-drawn smiley face - no circle, just the face features
 function SmileyFace() {
   return (
     <svg
-      width="32"
-      height="32"
+      width="18"
+      height="18"
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       style={{ display: 'block' }}
     >
-      {/* Face outline - slightly wobbly circle */}
+      <circle cx="8" cy="9" r="2" fill="currentColor" />
+      <circle cx="16" cy="9" r="2" fill="currentColor" />
       <path
-        d="M12 2.5c-1.8 0-3.6.4-5.2 1.3-1.5.8-2.8 2-3.7 3.5-.9 1.4-1.4 3.1-1.5 4.8 0 1.7.4 3.4 1.2 4.9.9 1.5 2.1 2.8 3.6 3.7 1.5.9 3.2 1.4 5 1.4 1.7 0 3.4-.4 4.9-1.2 1.5-.8 2.8-2 3.8-3.4 1-1.5 1.5-3.2 1.5-5 .1-1.8-.3-3.5-1.1-5.1-.8-1.5-2-2.9-3.4-3.8-1.5-1-3.2-1.5-5.1-1.5z"
+        d="M6.5 14c1.5 2.5 4 4 6 4 2 0 4.5-1.5 6-4"
         stroke="currentColor"
-        strokeWidth="1.8"
+        strokeWidth="2.5"
         strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* Left eye - small wobbly dot */}
-      <path
-        d="M8.5 9.5c.2-.3.5-.5.8-.4.3 0 .5.3.5.6 0 .4-.2.7-.5.8-.3.1-.6-.1-.8-.4-.1-.2-.1-.4 0-.6z"
-        fill="currentColor"
-      />
-      {/* Right eye - small wobbly dot */}
-      <path
-        d="M14.5 9.2c.2-.2.5-.3.8-.2.3.1.4.4.4.7-.1.3-.3.6-.6.6-.3.1-.6-.1-.7-.4-.1-.3 0-.5.1-.7z"
-        fill="currentColor"
-      />
-      {/* Smile - wobbly curve */}
-      <path
-        d="M7.5 14.5c.8 1.2 2 2.1 3.4 2.5 1.4.4 2.9.3 4.2-.3.7-.3 1.3-.7 1.8-1.3"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        fill="none"
       />
     </svg>
   );
@@ -84,20 +67,31 @@ export default function Home() {
         alignItems: 'center',
         justifyContent: 'center',
         padding: '20px',
+        backgroundColor: '#fffff8',
+        backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.6\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\' opacity=\'0.05\'/%3E%3C/svg%3E")',
+        fontFamily: 'Verdana, Arial, sans-serif',
       }}
     >
       <main
         style={{
           textAlign: 'center',
-          maxWidth: '400px',
+          maxWidth: '500px',
+          padding: '40px',
+          backgroundColor: '#fffff8',
+          border: '1px solid #ccc',
+          boxShadow: '4px 4px 0px #999',
+          backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.6\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\' opacity=\'0.05\'/%3E%3C/svg%3E")',
         }}
       >
         <h1
           style={{
-            fontSize: 'clamp(18px, 5vw, 36px)',
-            fontWeight: 'normal',
+            fontSize: '14px',
+            fontWeight: 'bold',
             marginBottom: '20px',
-            whiteSpace: 'nowrap',
+            color: '#990000',
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+            fontFamily: "Georgia, 'Times New Roman', Times, serif",
           }}
         >
           Friends Doing Fun Things
@@ -105,10 +99,10 @@ export default function Home() {
 
         <p
           style={{
-            fontSize: 'clamp(14px, 4vw, 18px)',
+            fontSize: '14px',
             marginBottom: '32px',
             lineHeight: '1.6',
-            padding: '0 10px',
+            color: '#333',
           }}
         >
           A community for people who&apos;d rather be somewhere than scroll about it.
@@ -121,12 +115,36 @@ export default function Home() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="pg-input"
+            style={{
+              border: '2px solid',
+              borderColor: '#888 #fff #fff #888',
+              padding: '6px 12px',
+              fontSize: '14px',
+              fontFamily: 'Verdana, Arial, sans-serif',
+              width: '200px',
+              height: '32px',
+              boxSizing: 'border-box',
+              boxShadow: '2px 2px 0px #666',
+              backgroundColor: '#fff',
+            }}
           />
           <button
             type="submit"
             disabled={status === 'loading'}
-            className="pg-button-circle"
+            style={{
+              border: '2px solid',
+              borderColor: '#fff #888 #888 #fff',
+              backgroundColor: '#c9c9ff',
+              padding: '0',
+              width: '32px',
+              height: '32px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: '2px 2px 0px #666',
+              boxSizing: 'border-box',
+            }}
             title="Join us"
           >
             {status === 'loading' ? '...' : <SmileyFace />}
@@ -137,7 +155,7 @@ export default function Home() {
           <p
             style={{
               marginTop: '12px',
-              fontSize: '14px',
+              fontSize: '12px',
               color: status === 'error' ? '#cc0000' : '#006600',
             }}
           >
