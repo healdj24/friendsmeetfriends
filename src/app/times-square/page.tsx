@@ -5,9 +5,9 @@ import { useMemo, useState } from 'react';
 type Channel = { label: string; youtubeId: string };
 
 const CHANNELS: Channel[] = [
-  { label: 'NYC 1960s', youtubeId: '5qap5aO4i9A' },
-  { label: 'Street Life', youtubeId: 'DWcJFNfaw9c' },
-  { label: 'Jazz Vibes', youtubeId: 'hHW1oY26kxQ' },
+  { label: 'NYC 1960s', youtubeId: 'qRv7G7WpOoU' },
+  { label: 'Lofi Beats', youtubeId: 'jfKfPfyJRdk' },
+  { label: 'Jazz NYC', youtubeId: 'Dx5qFachd3A' },
 ];
 
 function Scanlines() {
