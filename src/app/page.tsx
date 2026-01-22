@@ -6,8 +6,8 @@ import { useState } from 'react';
 function SmileyFace() {
   return (
     <svg
-      width="24"
-      height="24"
+      width="32"
+      height="32"
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -94,25 +94,27 @@ export default function Home() {
       >
         <h1
           style={{
-            fontSize: '24px',
+            fontSize: 'clamp(18px, 5vw, 36px)',
             fontWeight: 'normal',
-            marginBottom: '16px',
+            marginBottom: '20px',
+            whiteSpace: 'nowrap',
           }}
         >
-          Friends Meet Friends
+          Friends Doing Fun Things
         </h1>
 
         <p
           style={{
-            fontSize: '14px',
-            marginBottom: '24px',
+            fontSize: 'clamp(14px, 4vw, 18px)',
+            marginBottom: '32px',
             lineHeight: '1.6',
+            padding: '0 10px',
           }}
         >
           A community for people who&apos;d rather be somewhere than scroll about it.
         </p>
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center' }}>
           <input
             type="email"
             placeholder="your@email.com"
@@ -124,13 +126,7 @@ export default function Home() {
           <button
             type="submit"
             disabled={status === 'loading'}
-            className="pg-button"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '4px 10px',
-            }}
+            className="pg-button-circle"
             title="Join us"
           >
             {status === 'loading' ? '...' : <SmileyFace />}
