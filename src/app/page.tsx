@@ -4,10 +4,16 @@ import { useEffect, useRef, useState } from 'react';
 
 const COLORS = ['#990000', '#006600', '#000099', '#996600', '#660066', '#009999'];
 
-// Base velocity calibrated for 1400px desktop width
-const BASE_SCREEN_WIDTH = 1400;
-const BASE_VELOCITY_X = 1.125;
-const BASE_VELOCITY_Y = 0.75;
+// Screen width boundaries
+const MOBILE_WIDTH = 375;
+const DESKTOP_WIDTH = 1400;
+
+// DVD screensaver runs at ~90px/s, at 60fps = 1.5px/frame
+// Mobile speed: 20% faster than previous (was ~0.30, now ~0.36)
+const MOBILE_VELOCITY_X = 0.36;
+const MOBILE_VELOCITY_Y = 0.24;
+const DESKTOP_VELOCITY_X = 1.5;  // DVD speed
+const DESKTOP_VELOCITY_Y = 1.0;  // DVD speed (maintains 3:2 ratio)
 
 function SmileyFace({ size = 18 }: { size?: number }) {
   return (
@@ -37,7 +43,7 @@ export default function NYC() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
   const [position, setPosition] = useState({ x: 50, y: 50 });
-  const [velocity, setVelocity] = useState({ x: BASE_VELOCITY_X, y: BASE_VELOCITY_Y });
+  const [velocity, setVelocity] = useState({ x: DESKTOP_VELOCITY_X, y: DESKTOP_VELOCITY_Y });
   const [paused, setPaused] = useState(false);
   const [colorIndex, setColorIndex] = useState(0);
   const [cornerHit, setCornerHit] = useState(false);
@@ -45,18 +51,26 @@ export default function NYC() {
   const cardRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Calculate viewport-relative velocity and detect mobile
+  // Calculate velocity with linear interpolation from mobile to desktop
   useEffect(() => {
     const updateVelocity = () => {
       const screenWidth = window.innerWidth;
       const mobile = screenWidth < 768;
       setIsMobile(mobile);
 
-      // Scale velocity relative to screen width (same visual speed on all devices)
-      const scale = screenWidth / BASE_SCREEN_WIDTH;
+      // Clamp screen width to boundaries
+      const clampedWidth = Math.max(MOBILE_WIDTH, Math.min(DESKTOP_WIDTH, screenWidth));
+
+      // Linear interpolation: 0 at mobile, 1 at desktop
+      const t = (clampedWidth - MOBILE_WIDTH) / (DESKTOP_WIDTH - MOBILE_WIDTH);
+
+      // Interpolate between mobile and desktop velocities
+      const velocityX = MOBILE_VELOCITY_X + (DESKTOP_VELOCITY_X - MOBILE_VELOCITY_X) * t;
+      const velocityY = MOBILE_VELOCITY_Y + (DESKTOP_VELOCITY_Y - MOBILE_VELOCITY_Y) * t;
+
       setVelocity((prev) => ({
-        x: Math.sign(prev.x) * BASE_VELOCITY_X * scale,
-        y: Math.sign(prev.y) * BASE_VELOCITY_Y * scale,
+        x: Math.sign(prev.x) * velocityX,
+        y: Math.sign(prev.y) * velocityY,
       }));
     };
 
