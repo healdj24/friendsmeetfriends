@@ -15,61 +15,84 @@ const MOBILE_VELOCITY_Y = 0.24;
 const DESKTOP_VELOCITY_X = 1.5;  // DVD speed
 const DESKTOP_VELOCITY_Y = 1.0;  // DVD speed (maintains 3:2 ratio)
 
-function RetroTV({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
+function RetroTV({ children, onClose, borderColor, isMobile, onDragStart, isDragging }: { children: React.ReactNode; onClose: () => void; borderColor: string; isMobile: boolean; onDragStart?: (e: React.MouseEvent | React.TouchEvent) => void; isDragging?: boolean }) {
   return (
-    <div style={{ position: 'relative', width: '500px', maxWidth: '90vw' }}>
-      {/* TV Frame Image */}
-      <img
-        src="/tvframe.png"
-        alt=""
-        style={{
-          width: '100%',
-          height: 'auto',
-          display: 'block',
-          filter: 'drop-shadow(4px 4px 10px rgba(0,0,0,0.5))',
-        }}
-      />
-
-      {/* Content positioned inside the screen area */}
-      <div style={{
-        position: 'absolute',
-        top: '8%',
-        left: '7%',
-        right: '7%',
-        bottom: '18%',
-        overflow: 'hidden',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#111',
-        borderRadius: '8px',
+    <div
+      onMouseDown={onDragStart}
+      onTouchStart={onDragStart}
+      style={{
+        position: 'relative',
+        width: isMobile ? '320px' : '400px',
+        maxWidth: '85vw',
+        background: `linear-gradient(145deg, #3a3a3a 0%, #1a1a1a 50%, #2a2a2a 100%)`,
+        border: `6px solid ${borderColor}`,
+        borderRadius: '12px',
+        boxShadow: `
+          inset 2px 2px 4px rgba(255,255,255,0.1),
+          inset -2px -2px 4px rgba(0,0,0,0.3),
+          6px 6px 0px ${borderColor},
+          8px 8px 20px rgba(0,0,0,0.6)
+        `,
+        padding: '16px',
+        transition: 'border-color 0.3s, box-shadow 0.3s',
+        cursor: isDragging ? 'grabbing' : 'grab',
+        userSelect: 'none',
       }}>
-        {children}
+      {/* Inner bezel for depth */}
+      <div style={{
+        border: '3px solid',
+        borderColor: '#444 #222 #222 #444',
+        borderRadius: '10px',
+        padding: '8px',
+        background: 'linear-gradient(180deg, #333 0%, #1a1a1a 100%)',
+      }}>
+        {/* Screen area */}
+        <div style={{
+          backgroundColor: '#000',
+          borderRadius: '6px',
+          overflow: 'hidden',
+          aspectRatio: '4/3',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: 'inset 0 0 20px rgba(0,0,0,0.8)',
+          pointerEvents: 'none',
+        }}>
+          {children}
+        </div>
       </div>
 
-      {/* Close button */}
+      {/* Power button embedded in TV frame */}
       <button
         onClick={onClose}
         style={{
           position: 'absolute',
-          top: '3%',
-          right: '3%',
-          background: 'rgba(0,0,0,0.5)',
-          border: 'none',
+          bottom: '10px',
+          right: '10px',
+          width: '18px',
+          height: '18px',
           borderRadius: '50%',
-          width: '24px',
-          height: '24px',
-          fontSize: '14px',
+          background: borderColor,
+          border: '2px solid #333',
+          boxShadow: `
+            inset 1px 1px 2px rgba(255,255,255,0.3),
+            inset -1px -1px 2px rgba(0,0,0,0.4),
+            0 1px 3px rgba(0,0,0,0.5)
+          `,
           cursor: 'pointer',
-          color: '#fff',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          zIndex: 20,
+          padding: 0,
+          transition: 'background 0.3s',
         }}
-        title="Close"
+        title="Power off"
       >
-        ✕
+        {/* Power icon */}
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="3" strokeLinecap="round">
+          <line x1="12" y1="2" x2="12" y2="10" />
+          <path d="M18.4 6.6a9 9 0 1 1-12.8 0" />
+        </svg>
       </button>
     </div>
   );
@@ -110,8 +133,12 @@ export default function NYC() {
   const [isMobile, setIsMobile] = useState(false);
   const [showSnowfall, setShowSnowfall] = useState(true);
   const [imageLoading, setImageLoading] = useState(true);
+  const [tvPosition, setTvPosition] = useState<{ x: number; y: number } | null>(null);
+  const [isDraggingTv, setIsDraggingTv] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const cardRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const tvRef = useRef<HTMLDivElement>(null);
 
   // Calculate velocity with linear interpolation from mobile to desktop
   useEffect(() => {
@@ -140,6 +167,63 @@ export default function NYC() {
     window.addEventListener('resize', updateVelocity);
     return () => window.removeEventListener('resize', updateVelocity);
   }, []);
+
+  // TV dragging handlers
+  useEffect(() => {
+    if (!isDraggingTv) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      setTvPosition({
+        x: e.clientX - dragOffset.x,
+        y: e.clientY - dragOffset.y,
+      });
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      setTvPosition({
+        x: touch.clientX - dragOffset.x,
+        y: touch.clientY - dragOffset.y,
+      });
+    };
+
+    const handleEnd = () => {
+      setIsDraggingTv(false);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleEnd);
+    window.addEventListener('touchmove', handleTouchMove);
+    window.addEventListener('touchend', handleEnd);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleEnd);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleEnd);
+    };
+  }, [isDraggingTv, dragOffset]);
+
+  const handleTvDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!tvRef.current) return;
+    const rect = tvRef.current.getBoundingClientRect();
+
+    let clientX: number, clientY: number;
+    if ('touches' in e) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
+
+    setDragOffset({
+      x: clientX - rect.left,
+      y: clientY - rect.top,
+    });
+    setTvPosition({ x: rect.left, y: rect.top });
+    setIsDraggingTv(true);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -288,15 +372,17 @@ export default function NYC() {
       {/* Snowfall Popup - behind bouncing card, in front of video */}
       {showSnowfall && (
         <div
+          ref={tvRef}
           style={{
             position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
+            ...(tvPosition
+              ? { left: tvPosition.x, top: tvPosition.y }
+              : { top: '20px', right: '20px' }
+            ),
             zIndex: 5,
           }}
         >
-          <RetroTV onClose={() => setShowSnowfall(false)}>
+          <RetroTV onClose={() => setShowSnowfall(false)} borderColor={currentColor} isMobile={isMobile} onDragStart={handleTvDragStart} isDragging={isDraggingTv}>
             {imageLoading && (
               <div style={{
                 position: 'absolute',
@@ -318,7 +404,8 @@ export default function NYC() {
               style={{
                 width: '100%',
                 height: '100%',
-                objectFit: 'contain',
+                objectFit: 'cover',
+                objectPosition: 'top center',
                 opacity: imageLoading ? 0 : 1,
                 transition: 'opacity 0.3s',
               }}
