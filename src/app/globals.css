@@ -1,26 +1,60 @@
-@import "tailwindcss";
+/* Paul Graham-inspired minimal styling */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --button-bg: #c9c9ff;
+  --button-border: #9999cc;
+  --link-color: #000000;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+a {
+  color: var(--link-color);
+  text-decoration: underline;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+/* Paul Graham style button */
+.pg-button {
+  background-color: var(--button-bg);
+  border: 1px solid var(--button-border);
+  padding: 4px 12px;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--text-color);
+}
+
+.pg-button:hover {
+  background-color: #b8b8f0;
+}
+
+/* Input styling */
+.pg-input {
+  border: 1px solid #999;
+  padding: 4px 8px;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 14px;
+  width: 240px;
+}
+
+.pg-input:focus {
+  outline: 1px solid var(--button-border);
 }
