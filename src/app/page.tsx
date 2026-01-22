@@ -125,8 +125,8 @@ export default function NYC() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
-  const [position, setPosition] = useState({ x: 50, y: 50 });
-  const [velocity, setVelocity] = useState({ x: DESKTOP_VELOCITY_X, y: DESKTOP_VELOCITY_Y });
+  const [position, setPosition] = useState({ x: 50, y: 9999 }); // Start bottom-left (y clamped by animation)
+  const [velocity, setVelocity] = useState({ x: DESKTOP_VELOCITY_X, y: -DESKTOP_VELOCITY_Y }); // Negative y = moving up
   const [paused, setPaused] = useState(false);
   const [colorIndex, setColorIndex] = useState(0);
   const [cornerHit, setCornerHit] = useState(false);
