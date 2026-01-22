@@ -4,7 +4,7 @@ export async function GET() {
   try {
     // First fetch the forecast time
     const fcstTimeRes = await fetch(
-      'https://www.wpc.ncep.noaa.gov/Prob_Precip/hourly-data/latest/fcst_time.txt?' + Date.now()
+      'https://www.wpc.ncep.noaa.gov/Prob_Precip/hourly-data/latest/fcst_time.txt'
     );
     const fcstTime = (await fcstTimeRes.text()).trim();
 
@@ -17,7 +17,9 @@ export async function GET() {
     return new NextResponse(imageBuffer, {
       headers: {
         'Content-Type': 'image/png',
-        'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
+        // s-maxage = CDN cache for 1 hour
+        // stale-while-revalidate = serve stale content instantly while fetching fresh in background
+        'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
       },
     });
   } catch (error) {

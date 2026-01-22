@@ -16,359 +16,123 @@ const DESKTOP_VELOCITY_X = 1.5;  // DVD speed
 const DESKTOP_VELOCITY_Y = 1.0;  // DVD speed (maintains 3:2 ratio)
 
 function RetroTV({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
-  // Wood grain texture using CSS
-  const woodGrain = `
-    linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.03) 50%, transparent 100%),
-    linear-gradient(90deg,
-      #8B5A2B 0%, #7A4E24 10%, #8B5A2B 20%, #9B6A3B 30%,
-      #8B5A2B 40%, #7A4E24 55%, #8B5A2B 70%, #9B6A3B 85%, #8B5A2B 100%
-    )
-  `;
-
   return (
-    <div style={{ position: 'relative', paddingTop: '70px' }}>
-      {/* Rabbit ear antennas */}
+    <div style={{ position: 'relative' }}>
+      {/* TV Body - Gray plastic frame */}
       <div style={{
-        position: 'absolute',
-        top: '0',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: '120px',
-        height: '70px',
-      }}>
-        {/* Left antenna */}
-        <div style={{
-          position: 'absolute',
-          bottom: '0',
-          left: '25px',
-          width: '5px',
-          height: '65px',
-          background: 'linear-gradient(90deg, #666 0%, #888 50%, #555 100%)',
-          borderRadius: '2px',
-          transform: 'rotate(-30deg)',
-          transformOrigin: 'bottom center',
-          boxShadow: '1px 1px 3px rgba(0,0,0,0.4)',
-        }}>
-          {/* Chrome ball tip */}
-          <div style={{
-            position: 'absolute',
-            top: '-6px',
-            left: '-5px',
-            width: '14px',
-            height: '14px',
-            background: 'radial-gradient(circle at 30% 30%, #eee 0%, #999 50%, #666 100%)',
-            borderRadius: '50%',
-            boxShadow: '1px 1px 2px rgba(0,0,0,0.5)',
-          }} />
-        </div>
-        {/* Right antenna */}
-        <div style={{
-          position: 'absolute',
-          bottom: '0',
-          right: '25px',
-          width: '5px',
-          height: '65px',
-          background: 'linear-gradient(90deg, #555 0%, #888 50%, #666 100%)',
-          borderRadius: '2px',
-          transform: 'rotate(30deg)',
-          transformOrigin: 'bottom center',
-          boxShadow: '-1px 1px 3px rgba(0,0,0,0.4)',
-        }}>
-          {/* Chrome ball tip */}
-          <div style={{
-            position: 'absolute',
-            top: '-6px',
-            left: '-5px',
-            width: '14px',
-            height: '14px',
-            background: 'radial-gradient(circle at 30% 30%, #eee 0%, #999 50%, #666 100%)',
-            borderRadius: '50%',
-            boxShadow: '1px 1px 2px rgba(0,0,0,0.5)',
-          }} />
-        </div>
-        {/* Antenna base/mount */}
-        <div style={{
-          position: 'absolute',
-          bottom: '-8px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '30px',
-          height: '16px',
-          background: 'linear-gradient(180deg, #444 0%, #222 100%)',
-          borderRadius: '6px 6px 0 0',
-          boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.2)',
-        }} />
-      </div>
-
-      {/* TV Cabinet - Main body with wood grain */}
-      <div style={{
-        display: 'flex',
-        background: woodGrain,
-        padding: '18px',
-        borderRadius: '24px',
+        background: 'linear-gradient(160deg, #7a7a7a 0%, #5a5a5a 50%, #4a4a4a 100%)',
+        padding: '20px',
+        borderRadius: '20px',
         boxShadow: `
-          inset 0 2px 4px rgba(255,255,255,0.25),
+          inset 0 2px 4px rgba(255,255,255,0.3),
           inset 0 -3px 6px rgba(0,0,0,0.4),
-          6px 6px 20px rgba(0,0,0,0.6),
-          0 0 0 3px #5D3A1A
+          4px 4px 15px rgba(0,0,0,0.6)
         `,
-        border: '4px solid #6B4423',
+        border: '3px solid #333',
       }}>
-        {/* Left side - Screen area */}
-        <div style={{ flex: 1 }}>
-          {/* Chrome trim around screen */}
-          <div style={{
-            background: 'linear-gradient(180deg, #d4af37 0%, #b8962e 50%, #8b7023 100%)',
-            padding: '4px',
-            borderRadius: '16px',
-            boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.5), 0 2px 4px rgba(0,0,0,0.3)',
-          }}>
-            {/* Thick dark bezel */}
-            <div style={{
-              backgroundColor: '#1a1a1a',
-              padding: '14px',
-              borderRadius: '12px',
-              boxShadow: 'inset 0 0 30px rgba(0,0,0,0.9), inset 0 0 10px rgba(0,0,0,0.5)',
-            }}>
-              {/* CRT Screen with curve effect */}
-              <div style={{
-                backgroundColor: '#0a0a0a',
-                borderRadius: '10px / 12px',
-                overflow: 'hidden',
-                position: 'relative',
-                boxShadow: `
-                  inset 0 0 60px rgba(0,0,0,0.8),
-                  inset 0 0 20px rgba(255,255,255,0.03),
-                  0 0 0 2px #333
-                `,
-              }}>
-                {/* Screen bulge/curve highlight */}
-                <div style={{
-                  position: 'absolute',
-                  top: '0',
-                  left: '0',
-                  right: '0',
-                  bottom: '0',
-                  background: `
-                    radial-gradient(ellipse 120% 100% at 50% 50%, transparent 60%, rgba(0,0,0,0.4) 100%),
-                    linear-gradient(160deg, rgba(255,255,255,0.15) 0%, transparent 30%, transparent 70%, rgba(0,0,0,0.2) 100%)
-                  `,
-                  pointerEvents: 'none',
-                  zIndex: 3,
-                  borderRadius: '10px',
-                }} />
-                {/* Screen glare - that classic CRT reflection */}
-                <div style={{
-                  position: 'absolute',
-                  top: '5%',
-                  left: '5%',
-                  width: '35%',
-                  height: '25%',
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 100%)',
-                  pointerEvents: 'none',
-                  zIndex: 4,
-                  borderRadius: '50% 30% 50% 30%',
-                }} />
-                {/* Content */}
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                  {children}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Right side - Control panel */}
+        {/* Inner black bezel */}
         <div style={{
-          width: '80px',
-          marginLeft: '14px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          paddingTop: '10px',
-          paddingBottom: '10px',
+          backgroundColor: '#1a1a1a',
+          padding: '8px',
+          borderRadius: '12px',
+          boxShadow: 'inset 0 0 20px rgba(0,0,0,0.8)',
+          border: '2px solid #000',
         }}>
-          {/* Channel knob */}
-          <div style={{ textAlign: 'center' }}>
-            <div style={{
-              width: '50px',
-              height: '50px',
-              margin: '0 auto',
-              borderRadius: '50%',
-              background: 'linear-gradient(145deg, #3a3a3a 0%, #1a1a1a 50%, #2a2a2a 100%)',
-              boxShadow: `
-                inset 0 2px 4px rgba(255,255,255,0.1),
-                inset 0 -2px 4px rgba(0,0,0,0.5),
-                2px 3px 6px rgba(0,0,0,0.5),
-                0 0 0 3px #444
-              `,
-              position: 'relative',
-            }}>
-              {/* Chrome ring */}
-              <div style={{
-                position: 'absolute',
-                top: '5px',
-                left: '5px',
-                right: '5px',
-                bottom: '5px',
-                borderRadius: '50%',
-                border: '2px solid',
-                borderColor: '#888 #666 #555 #777',
-              }} />
-              {/* Knob indicator line */}
-              <div style={{
-                position: 'absolute',
-                top: '8px',
-                left: '50%',
-                width: '3px',
-                height: '12px',
-                backgroundColor: '#ddd',
-                transform: 'translateX(-50%) rotate(-30deg)',
-                transformOrigin: 'bottom center',
-                borderRadius: '2px',
-              }} />
-              {/* Channel numbers around knob */}
-              {[...Array(12)].map((_, i) => (
-                <div key={i} style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  fontSize: '6px',
-                  color: '#8B5A2B',
-                  fontWeight: 'bold',
-                  transform: `rotate(${i * 30 - 90}deg) translateY(-32px)`,
-                  transformOrigin: '0 0',
-                }}>
-                  {i === 0 ? '' : i + 1}
-                </div>
-              ))}
-            </div>
-            <div style={{
-              fontSize: '7px',
-              color: '#2a1a0a',
-              marginTop: '4px',
-              fontFamily: 'Arial, sans-serif',
-              fontWeight: 'bold',
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-            }}>
-              Channel
-            </div>
-          </div>
-
-          {/* Volume knob */}
-          <div style={{ textAlign: 'center' }}>
-            <div style={{
-              width: '45px',
-              height: '45px',
-              margin: '0 auto',
-              borderRadius: '50%',
-              background: 'linear-gradient(145deg, #3a3a3a 0%, #1a1a1a 50%, #2a2a2a 100%)',
-              boxShadow: `
-                inset 0 2px 4px rgba(255,255,255,0.1),
-                inset 0 -2px 4px rgba(0,0,0,0.5),
-                2px 3px 6px rgba(0,0,0,0.5),
-                0 0 0 3px #444
-              `,
-              position: 'relative',
-            }}>
-              {/* Chrome ring */}
-              <div style={{
-                position: 'absolute',
-                top: '4px',
-                left: '4px',
-                right: '4px',
-                bottom: '4px',
-                borderRadius: '50%',
-                border: '2px solid',
-                borderColor: '#888 #666 #555 #777',
-              }} />
-              {/* Knob indicator */}
-              <div style={{
-                position: 'absolute',
-                top: '7px',
-                left: '50%',
-                width: '3px',
-                height: '10px',
-                backgroundColor: '#ddd',
-                transform: 'translateX(-50%) rotate(45deg)',
-                transformOrigin: 'bottom center',
-                borderRadius: '2px',
-              }} />
-            </div>
-            <div style={{
-              fontSize: '7px',
-              color: '#2a1a0a',
-              marginTop: '4px',
-              fontFamily: 'Arial, sans-serif',
-              fontWeight: 'bold',
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-            }}>
-              Volume
-            </div>
-          </div>
-
-          {/* Speaker grille */}
+          {/* CRT Screen container - creates the curved clip effect */}
           <div style={{
-            marginTop: '8px',
-            padding: '6px',
-            backgroundColor: '#2a1a0a',
-            borderRadius: '6px',
-            boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5)',
+            borderRadius: '8px / 40px',
+            overflow: 'hidden',
+            position: 'relative',
+            backgroundColor: '#0a0a0a',
           }}>
-            {[...Array(8)].map((_, i) => (
-              <div key={i} style={{
-                height: '3px',
-                backgroundColor: '#1a0a00',
-                marginBottom: i < 7 ? '3px' : 0,
-                borderRadius: '1px',
-                boxShadow: 'inset 0 1px 1px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.05)',
-              }} />
-            ))}
+            {/* Screen glare - white streak in top left like the image */}
+            <div style={{
+              position: 'absolute',
+              top: '8%',
+              left: '8%',
+              width: '20%',
+              height: '3px',
+              background: 'linear-gradient(90deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.4) 50%, transparent 100%)',
+              transform: 'rotate(-50deg)',
+              pointerEvents: 'none',
+              zIndex: 10,
+              borderRadius: '2px',
+            }} />
+
+            {/* Secondary glare line */}
+            <div style={{
+              position: 'absolute',
+              top: '12%',
+              left: '5%',
+              width: '8%',
+              height: '2px',
+              background: 'linear-gradient(90deg, rgba(255,255,255,0.5) 0%, transparent 100%)',
+              transform: 'rotate(-50deg)',
+              pointerEvents: 'none',
+              zIndex: 10,
+              borderRadius: '2px',
+            }} />
+
+            {/* Screen curve darkening at edges */}
+            <div style={{
+              position: 'absolute',
+              top: '0',
+              left: '0',
+              right: '0',
+              bottom: '0',
+              background: `
+                radial-gradient(ellipse 100% 80% at 50% 50%, transparent 50%, rgba(0,0,0,0.3) 100%)
+              `,
+              pointerEvents: 'none',
+              zIndex: 5,
+              borderRadius: '8px / 40px',
+            }} />
+
+            {/* Subtle blue tint overlay like old CRTs */}
+            <div style={{
+              position: 'absolute',
+              top: '0',
+              left: '0',
+              right: '0',
+              bottom: '0',
+              background: 'linear-gradient(180deg, rgba(100,180,200,0.08) 0%, rgba(80,150,180,0.05) 100%)',
+              pointerEvents: 'none',
+              zIndex: 4,
+              borderRadius: '8px / 40px',
+            }} />
+
+            {/* Content */}
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              {children}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Brand badge */}
-      <div style={{
-        position: 'absolute',
-        bottom: '8px',
-        left: '28px',
-        fontSize: '8px',
-        color: '#d4af37',
-        fontFamily: 'Georgia, serif',
-        fontStyle: 'italic',
-        textShadow: '1px 1px 1px rgba(0,0,0,0.5)',
-        letterSpacing: '2px',
-      }}>
-        FDFT
-      </div>
-
-      {/* Close button styled as power button */}
+      {/* Close button - small and subtle */}
       <button
         onClick={onClose}
         style={{
           position: 'absolute',
-          top: '78px',
-          right: '12px',
-          background: 'linear-gradient(145deg, #4a4a4a 0%, #2a2a2a 100%)',
-          border: '2px solid #555',
+          top: '10px',
+          right: '10px',
+          background: 'linear-gradient(145deg, #555 0%, #333 100%)',
+          border: '2px solid #222',
           borderRadius: '50%',
-          width: '20px',
-          height: '20px',
-          fontSize: '10px',
+          width: '22px',
+          height: '22px',
+          fontSize: '12px',
           cursor: 'pointer',
-          color: '#ff4444',
+          color: '#aaa',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          zIndex: 10,
+          zIndex: 20,
           boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), 2px 2px 4px rgba(0,0,0,0.4)',
         }}
-        title="Power Off"
+        title="Close"
       >
-        ⏻
+        ✕
       </button>
     </div>
   );
@@ -408,29 +172,9 @@ export default function NYC() {
   const [cornerHit, setCornerHit] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [showSnowfall, setShowSnowfall] = useState(true);
-  const [imageTimestamp, setImageTimestamp] = useState(Date.now());
+  const [imageLoading, setImageLoading] = useState(true);
   const cardRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  // Refresh snowfall image every hour AND when user returns to tab
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setImageTimestamp(Date.now());
-    }, 60 * 60 * 1000); // 1 hour
-
-    // Also refresh when user comes back to the tab after being away
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        setImageTimestamp(Date.now());
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      clearInterval(interval);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, []);
 
   // Calculate velocity with linear interpolation from mobile to desktop
   useEffect(() => {
@@ -616,15 +360,33 @@ export default function NYC() {
           }}
         >
           <RetroTV onClose={() => setShowSnowfall(false)}>
-            <img
-              src={`/api/snowfall?t=${imageTimestamp}`}
-              alt="Expected Snowfall"
-              style={{
-                maxWidth: isMobile ? '75vw' : '450px',
-                height: 'auto',
-                display: 'block',
-              }}
-            />
+            <div style={{ position: 'relative', minWidth: isMobile ? '200px' : '400px', minHeight: isMobile ? '150px' : '300px' }}>
+              {imageLoading && (
+                <div style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  color: '#666',
+                  fontSize: '12px',
+                  fontFamily: 'monospace',
+                }}>
+                  Loading forecast...
+                </div>
+              )}
+              <img
+                src="/api/snowfall"
+                alt="Expected Snowfall"
+                onLoad={() => setImageLoading(false)}
+                style={{
+                  maxWidth: isMobile ? '75vw' : '450px',
+                  height: 'auto',
+                  display: 'block',
+                  opacity: imageLoading ? 0 : 1,
+                  transition: 'opacity 0.3s',
+                }}
+              />
+            </div>
           </RetroTV>
         </div>
       )}
