@@ -17,118 +17,55 @@ const DESKTOP_VELOCITY_Y = 1.0;  // DVD speed (maintains 3:2 ratio)
 
 function RetroTV({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
   return (
-    <div style={{ position: 'relative' }}>
-      {/* TV Body - Gray plastic frame */}
+    <div style={{ position: 'relative', width: '500px', maxWidth: '90vw' }}>
+      {/* TV Frame Image */}
+      <img
+        src="/tvframe.png"
+        alt=""
+        style={{
+          width: '100%',
+          height: 'auto',
+          display: 'block',
+          filter: 'drop-shadow(4px 4px 10px rgba(0,0,0,0.5))',
+        }}
+      />
+
+      {/* Content positioned inside the screen area */}
       <div style={{
-        background: 'linear-gradient(160deg, #7a7a7a 0%, #5a5a5a 50%, #4a4a4a 100%)',
-        padding: '20px',
-        borderRadius: '20px',
-        boxShadow: `
-          inset 0 2px 4px rgba(255,255,255,0.3),
-          inset 0 -3px 6px rgba(0,0,0,0.4),
-          4px 4px 15px rgba(0,0,0,0.6)
-        `,
-        border: '3px solid #333',
+        position: 'absolute',
+        top: '8%',
+        left: '7%',
+        right: '7%',
+        bottom: '18%',
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#111',
+        borderRadius: '8px',
       }}>
-        {/* Inner black bezel */}
-        <div style={{
-          backgroundColor: '#1a1a1a',
-          padding: '8px',
-          borderRadius: '12px',
-          boxShadow: 'inset 0 0 20px rgba(0,0,0,0.8)',
-          border: '2px solid #000',
-        }}>
-          {/* CRT Screen container - creates the curved clip effect */}
-          <div style={{
-            borderRadius: '8px / 40px',
-            overflow: 'hidden',
-            position: 'relative',
-            backgroundColor: '#0a0a0a',
-          }}>
-            {/* Screen glare - white streak in top left like the image */}
-            <div style={{
-              position: 'absolute',
-              top: '8%',
-              left: '8%',
-              width: '20%',
-              height: '3px',
-              background: 'linear-gradient(90deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.4) 50%, transparent 100%)',
-              transform: 'rotate(-50deg)',
-              pointerEvents: 'none',
-              zIndex: 10,
-              borderRadius: '2px',
-            }} />
-
-            {/* Secondary glare line */}
-            <div style={{
-              position: 'absolute',
-              top: '12%',
-              left: '5%',
-              width: '8%',
-              height: '2px',
-              background: 'linear-gradient(90deg, rgba(255,255,255,0.5) 0%, transparent 100%)',
-              transform: 'rotate(-50deg)',
-              pointerEvents: 'none',
-              zIndex: 10,
-              borderRadius: '2px',
-            }} />
-
-            {/* Screen curve darkening at edges */}
-            <div style={{
-              position: 'absolute',
-              top: '0',
-              left: '0',
-              right: '0',
-              bottom: '0',
-              background: `
-                radial-gradient(ellipse 100% 80% at 50% 50%, transparent 50%, rgba(0,0,0,0.3) 100%)
-              `,
-              pointerEvents: 'none',
-              zIndex: 5,
-              borderRadius: '8px / 40px',
-            }} />
-
-            {/* Subtle blue tint overlay like old CRTs */}
-            <div style={{
-              position: 'absolute',
-              top: '0',
-              left: '0',
-              right: '0',
-              bottom: '0',
-              background: 'linear-gradient(180deg, rgba(100,180,200,0.08) 0%, rgba(80,150,180,0.05) 100%)',
-              pointerEvents: 'none',
-              zIndex: 4,
-              borderRadius: '8px / 40px',
-            }} />
-
-            {/* Content */}
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              {children}
-            </div>
-          </div>
-        </div>
+        {children}
       </div>
 
-      {/* Close button - small and subtle */}
+      {/* Close button */}
       <button
         onClick={onClose}
         style={{
           position: 'absolute',
-          top: '10px',
-          right: '10px',
-          background: 'linear-gradient(145deg, #555 0%, #333 100%)',
-          border: '2px solid #222',
+          top: '3%',
+          right: '3%',
+          background: 'rgba(0,0,0,0.5)',
+          border: 'none',
           borderRadius: '50%',
-          width: '22px',
-          height: '22px',
-          fontSize: '12px',
+          width: '24px',
+          height: '24px',
+          fontSize: '14px',
           cursor: 'pointer',
-          color: '#aaa',
+          color: '#fff',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 20,
-          boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), 2px 2px 4px rgba(0,0,0,0.4)',
         }}
         title="Close"
       >
@@ -360,37 +297,32 @@ export default function NYC() {
           }}
         >
           <RetroTV onClose={() => setShowSnowfall(false)}>
-            <div style={{ position: 'relative', minWidth: isMobile ? '200px' : '400px', minHeight: isMobile ? '150px' : '300px' }}>
-              {imageLoading && (
-                <div style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  color: '#666',
-                  fontSize: '12px',
-                  fontFamily: 'monospace',
-                }}>
-                  Loading forecast...
-                </div>
-              )}
-              <img
-                src="/api/snowfall"
-                alt="Expected Snowfall"
-                onLoad={() => setImageLoading(false)}
-                onError={(e) => {
-                  console.error('Snowfall image failed to load:', e);
-                  setImageLoading(false);
-                }}
-                style={{
-                  maxWidth: isMobile ? '75vw' : '450px',
-                  height: 'auto',
-                  display: 'block',
-                  opacity: imageLoading ? 0 : 1,
-                  transition: 'opacity 0.3s',
-                }}
-              />
-            </div>
+            {imageLoading && (
+              <div style={{
+                position: 'absolute',
+                color: '#888',
+                fontSize: '12px',
+                fontFamily: 'monospace',
+              }}>
+                Loading...
+              </div>
+            )}
+            <img
+              src="/api/snowfall"
+              alt="Expected Snowfall"
+              onLoad={() => setImageLoading(false)}
+              onError={(e) => {
+                console.error('Snowfall image failed to load:', e);
+                setImageLoading(false);
+              }}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain',
+                opacity: imageLoading ? 0 : 1,
+                transition: 'opacity 0.3s',
+              }}
+            />
           </RetroTV>
         </div>
       )}
