@@ -32,7 +32,8 @@ export default function NYC() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
   const [position, setPosition] = useState({ x: 100, y: 100 });
-  const [velocity, setVelocity] = useState({ x: 2.25, y: 1.5 });
+  const [velocity, setVelocity] = useState({ x: 1.125, y: 0.75 });
+  const [paused, setPaused] = useState(false);
   const [colorIndex, setColorIndex] = useState(0);
   const [cornerHit, setCornerHit] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -69,7 +70,7 @@ export default function NYC() {
     let animationId: number;
 
     const animate = () => {
-      if (!cardRef.current || !containerRef.current) {
+      if (!cardRef.current || !containerRef.current || paused) {
         animationId = requestAnimationFrame(animate);
         return;
       }
@@ -136,7 +137,7 @@ export default function NYC() {
     animationId = requestAnimationFrame(animate);
 
     return () => cancelAnimationFrame(animationId);
-  }, [velocity]);
+  }, [velocity, paused]);
 
   const currentColor = COLORS[colorIndex];
 
@@ -176,6 +177,9 @@ export default function NYC() {
       {/* Bouncing Card */}
       <div
         ref={cardRef}
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+        onClick={() => setPaused(true)}
         style={{
           position: 'absolute',
           left: position.x,
