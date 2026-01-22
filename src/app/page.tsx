@@ -412,12 +412,24 @@ export default function NYC() {
   const cardRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Refresh snowfall image every hour
+  // Refresh snowfall image every hour AND when user returns to tab
   useEffect(() => {
     const interval = setInterval(() => {
       setImageTimestamp(Date.now());
     }, 60 * 60 * 1000); // 1 hour
-    return () => clearInterval(interval);
+
+    // Also refresh when user comes back to the tab after being away
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        setImageTimestamp(Date.now());
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, []);
 
   // Calculate velocity with linear interpolation from mobile to desktop
