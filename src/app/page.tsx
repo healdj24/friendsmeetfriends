@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
-// Hand-drawn smiley face - no circle, just the face features
 function SmileyFace() {
   return (
     <svg
@@ -30,6 +29,8 @@ export default function Home() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
+  const [muted, setMuted] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,6 +59,13 @@ export default function Home() {
     }
   };
 
+  const toggleMute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !muted;
+      setMuted(!muted);
+    }
+  };
+
   return (
     <div
       style={{
@@ -67,20 +75,54 @@ export default function Home() {
         alignItems: 'center',
         justifyContent: 'center',
         padding: '20px',
-        backgroundColor: '#fffff8',
-        backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.6\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\' opacity=\'0.05\'/%3E%3C/svg%3E")',
-        fontFamily: 'Verdana, Arial, sans-serif',
+        position: 'relative',
+        overflow: 'hidden',
       }}
     >
+      {/* Video Background */}
+      <video
+        ref={videoRef}
+        autoPlay
+        loop
+        muted
+        playsInline
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          minWidth: '100%',
+          minHeight: '100%',
+          width: 'auto',
+          height: 'auto',
+          transform: 'translate(-50%, -50%)',
+          zIndex: -1,
+          objectFit: 'cover',
+        }}
+      >
+        <source src="/casey.mp4" type="video/mp4" />
+      </video>
+
+      {/* Dark overlay for readability */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.4)',
+          zIndex: 0,
+        }}
+      />
+
       <main
         style={{
           textAlign: 'center',
           maxWidth: '500px',
           padding: '40px',
-          backgroundColor: '#fffff8',
+          backgroundColor: 'rgba(255, 255, 248, 0.95)',
           border: '1px solid #ccc',
           boxShadow: '4px 4px 0px #999',
-          backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.6\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\' opacity=\'0.05\'/%3E%3C/svg%3E")',
+          fontFamily: 'Verdana, Arial, sans-serif',
+          position: 'relative',
+          zIndex: 1,
         }}
       >
         <h1
@@ -163,6 +205,27 @@ export default function Home() {
           </p>
         )}
       </main>
+
+      {/* Unmute button */}
+      <button
+        onClick={toggleMute}
+        style={{
+          position: 'fixed',
+          bottom: '20px',
+          right: '20px',
+          background: 'rgba(255, 255, 255, 0.9)',
+          color: '#000',
+          border: 'none',
+          padding: '12px 16px',
+          borderRadius: '8px',
+          fontSize: '14px',
+          cursor: 'pointer',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+          zIndex: 10,
+        }}
+      >
+        {muted ? '🔇 Tap for sound' : '🔊 Sound on'}
+      </button>
     </div>
   );
 }
