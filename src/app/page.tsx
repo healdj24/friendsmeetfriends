@@ -378,6 +378,10 @@ export default function NYC() {
                 src="/api/snowfall"
                 alt="Expected Snowfall"
                 onLoad={() => setImageLoading(false)}
+                onError={(e) => {
+                  console.error('Snowfall image failed to load:', e);
+                  setImageLoading(false);
+                }}
                 style={{
                   maxWidth: isMobile ? '75vw' : '450px',
                   height: 'auto',
