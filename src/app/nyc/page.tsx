@@ -32,7 +32,7 @@ export default function NYC() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
   const [position, setPosition] = useState({ x: 100, y: 100 });
-  const [velocity, setVelocity] = useState({ x: 3, y: 2 });
+  const [velocity, setVelocity] = useState({ x: 2.25, y: 1.5 });
   const [colorIndex, setColorIndex] = useState(0);
   const [cornerHit, setCornerHit] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
