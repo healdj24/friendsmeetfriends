@@ -133,6 +133,7 @@ export default function NYC() {
   const [isMobile, setIsMobile] = useState(false);
   const [showSnowfall, setShowSnowfall] = useState(true);
   const [imageLoading, setImageLoading] = useState(true);
+  const snowfallImgRef = useRef<HTMLImageElement>(null);
   const [tvPosition, setTvPosition] = useState<{ x: number; y: number } | null>(null);
   const [isDraggingTv, setIsDraggingTv] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
@@ -225,6 +226,17 @@ export default function NYC() {
     setTvPosition({ x: rect.left, y: rect.top });
     setIsDraggingTv(true);
   };
+
+  // Check if snowfall image is already loaded (handles cached images)
+  useEffect(() => {
+    const img = snowfallImgRef.current;
+    if (img?.complete && img?.naturalHeight > 0) {
+      setImageLoading(false);
+    }
+    // Fallback: if still loading after 10s, hide the loading text anyway
+    const timeout = setTimeout(() => setImageLoading(false), 10000);
+    return () => clearTimeout(timeout);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -402,13 +414,11 @@ export default function NYC() {
               </div>
             )}
             <img
+              ref={snowfallImgRef}
               src="/api/snowfall"
               alt="Expected Snowfall"
               onLoad={() => setImageLoading(false)}
-              onError={(e) => {
-                console.error('Snowfall image failed to load:', e);
-                setImageLoading(false);
-              }}
+              onError={() => setImageLoading(false)}
               style={{
                 width: '100%',
                 height: '100%',
