@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 
 function SmileyFace() {
   return (
@@ -29,8 +29,6 @@ export default function Home() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
-  const [muted, setMuted] = useState(true);
-  const videoRef = useRef<HTMLVideoElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,12 +57,6 @@ export default function Home() {
     }
   };
 
-  const toggleMute = () => {
-    if (videoRef.current) {
-      videoRef.current.muted = !muted;
-      setMuted(!muted);
-    }
-  };
 
   return (
     <div
@@ -81,7 +73,6 @@ export default function Home() {
     >
       {/* Video Background */}
       <video
-        ref={videoRef}
         autoPlay
         loop
         muted
@@ -206,26 +197,6 @@ export default function Home() {
         )}
       </main>
 
-      {/* Unmute button */}
-      <button
-        onClick={toggleMute}
-        style={{
-          position: 'fixed',
-          bottom: '20px',
-          right: '20px',
-          background: 'rgba(255, 255, 255, 0.9)',
-          color: '#000',
-          border: 'none',
-          padding: '12px 16px',
-          borderRadius: '8px',
-          fontSize: '14px',
-          cursor: 'pointer',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-          zIndex: 10,
-        }}
-      >
-        {muted ? '🔇 Tap for sound' : '🔊 Sound on'}
-      </button>
     </div>
   );
 }
