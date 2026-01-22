@@ -125,7 +125,7 @@ export default function NYC() {
 
         if (hitCorner) {
           setCornerHit(true);
-          setTimeout(() => setCornerHit(false), 1000);
+          setTimeout(() => setCornerHit(false), 3000);
         }
 
         return { x: newX, y: newY };
