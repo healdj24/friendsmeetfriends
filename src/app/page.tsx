@@ -353,6 +353,8 @@ export default function NYC() {
         loop
         muted
         playsInline
+        preload="auto"
+        poster="/casey-poster.jpg"
         style={{
           position: 'absolute',
           top: '50%',
