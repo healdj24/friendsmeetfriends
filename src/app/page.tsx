@@ -122,6 +122,7 @@ function SmileyFace({ size = 18 }: { size?: number }) {
 }
 
 export default function NYC() {
+  const [hasMounted, setHasMounted] = useState(false);
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
@@ -141,6 +142,10 @@ export default function NYC() {
   const containerRef = useRef<HTMLDivElement>(null);
   const tvRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   // Calculate velocity with linear interpolation from mobile to desktop
   useEffect(() => {
@@ -391,7 +396,7 @@ export default function NYC() {
       </video>
 
       {/* Snowfall Popup - behind bouncing card, in front of video */}
-      {showSnowfall && (
+      {hasMounted && showSnowfall && (
         <div
           ref={tvRef}
           style={{
