@@ -15,6 +15,146 @@ const MOBILE_VELOCITY_Y = 0.24;
 const DESKTOP_VELOCITY_X = 1.5;  // DVD speed
 const DESKTOP_VELOCITY_Y = 1.0;  // DVD speed (maintains 3:2 ratio)
 
+function RetroTV({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
+  return (
+    <div style={{ position: 'relative' }}>
+      {/* Rabbit ear antennas */}
+      <div style={{
+        position: 'absolute',
+        top: '-60px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: '100px',
+        height: '60px',
+      }}>
+        {/* Left antenna */}
+        <div style={{
+          position: 'absolute',
+          bottom: '0',
+          left: '20px',
+          width: '4px',
+          height: '55px',
+          backgroundColor: '#444',
+          borderRadius: '2px',
+          transform: 'rotate(-25deg)',
+          transformOrigin: 'bottom center',
+        }}>
+          <div style={{
+            position: 'absolute',
+            top: '-4px',
+            left: '-3px',
+            width: '10px',
+            height: '10px',
+            backgroundColor: '#333',
+            borderRadius: '50%',
+          }} />
+        </div>
+        {/* Right antenna */}
+        <div style={{
+          position: 'absolute',
+          bottom: '0',
+          right: '20px',
+          width: '4px',
+          height: '55px',
+          backgroundColor: '#444',
+          borderRadius: '2px',
+          transform: 'rotate(25deg)',
+          transformOrigin: 'bottom center',
+        }}>
+          <div style={{
+            position: 'absolute',
+            top: '-4px',
+            left: '-3px',
+            width: '10px',
+            height: '10px',
+            backgroundColor: '#333',
+            borderRadius: '50%',
+          }} />
+        </div>
+        {/* Antenna base */}
+        <div style={{
+          position: 'absolute',
+          bottom: '-5px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '20px',
+          height: '12px',
+          backgroundColor: '#555',
+          borderRadius: '4px 4px 0 0',
+        }} />
+      </div>
+
+      {/* TV Cabinet */}
+      <div style={{
+        backgroundColor: '#8B5A2B',
+        padding: '20px',
+        borderRadius: '20px',
+        boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.3), inset 0 -2px 4px rgba(0,0,0,0.3), 4px 4px 10px rgba(0,0,0,0.5)',
+        border: '3px solid #5D3A1A',
+      }}>
+        {/* Inner dark bezel */}
+        <div style={{
+          backgroundColor: '#2a2a2a',
+          padding: '12px',
+          borderRadius: '12px',
+          boxShadow: 'inset 0 0 20px rgba(0,0,0,0.8)',
+        }}>
+          {/* Screen with slight curve effect */}
+          <div style={{
+            backgroundColor: '#1a1a1a',
+            borderRadius: '8px',
+            overflow: 'hidden',
+            position: 'relative',
+            boxShadow: 'inset 0 0 30px rgba(255,255,255,0.05)',
+          }}>
+            {/* Screen glare overlay */}
+            <div style={{
+              position: 'absolute',
+              top: '0',
+              left: '0',
+              right: '0',
+              bottom: '0',
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%, transparent 100%)',
+              pointerEvents: 'none',
+              zIndex: 2,
+              borderRadius: '8px',
+            }} />
+            {/* Content */}
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              {children}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Close button */}
+      <button
+        onClick={onClose}
+        style={{
+          position: 'absolute',
+          top: '8px',
+          right: '8px',
+          background: '#5D3A1A',
+          border: '2px solid #8B5A2B',
+          borderRadius: '50%',
+          width: '24px',
+          height: '24px',
+          fontSize: '14px',
+          cursor: 'pointer',
+          color: '#ddd',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 10,
+        }}
+        title="Close"
+      >
+        ✕
+      </button>
+    </div>
+  );
+}
+
 function SmileyFace({ size = 18 }: { size?: number }) {
   return (
     <svg
@@ -49,15 +189,23 @@ export default function NYC() {
   const [cornerHit, setCornerHit] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [showSnowfall, setShowSnowfall] = useState(true);
-  const [imageTimestamp, setImageTimestamp] = useState(Date.now());
+  const [fcstTime, setFcstTime] = useState('');
   const cardRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Refresh snowfall image every hour
+  // Fetch the latest forecast time from WPC and refresh every hour
   useEffect(() => {
-    const interval = setInterval(() => {
-      setImageTimestamp(Date.now());
-    }, 60 * 60 * 1000); // 1 hour
+    const fetchFcstTime = async () => {
+      try {
+        const res = await fetch('https://www.wpc.ncep.noaa.gov/Prob_Precip/hourly-data/latest/fcst_time.txt?' + Date.now());
+        const text = await res.text();
+        setFcstTime(text.trim());
+      } catch (e) {
+        console.error('Failed to fetch forecast time:', e);
+      }
+    };
+    fetchFcstTime();
+    const interval = setInterval(fetchFcstTime, 60 * 60 * 1000); // 1 hour
     return () => clearInterval(interval);
   }, []);
 
@@ -242,41 +390,19 @@ export default function NYC() {
             left: '50%',
             transform: 'translate(-50%, -50%)',
             zIndex: 5,
-            backgroundColor: 'rgba(255, 255, 248, 0.95)',
-            border: `3px solid ${currentColor}`,
-            boxShadow: `4px 4px 0px ${currentColor}`,
-            padding: isMobile ? '12px' : '16px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
           }}
         >
-          <button
-            onClick={() => setShowSnowfall(false)}
-            style={{
-              position: 'absolute',
-              top: '8px',
-              right: '8px',
-              background: 'none',
-              border: 'none',
-              fontSize: '18px',
-              cursor: 'pointer',
-              padding: '0 4px',
-              color: '#666',
-            }}
-            title="Close"
-          >
-            ✕
-          </button>
-          <img
-            src={`https://www.weather.gov/images/okx/winter/StormTotalSnow.jpg?t=${imageTimestamp}`}
-            alt="Expected Snowfall"
-            style={{
-              maxWidth: isMobile ? '85vw' : '500px',
-              height: 'auto',
-              borderRadius: '4px',
-            }}
-          />
+          <RetroTV onClose={() => setShowSnowfall(false)}>
+            <img
+              src={fcstTime ? `https://www.wpc.ncep.noaa.gov/Prob_Precip/idss-map/mapgen.php?office=OKX&summary=true&pointpreferences=OKX&ptype=prob_sn&product=expected&${fcstTime}` : ''}
+              alt="Expected Snowfall"
+              style={{
+                maxWidth: isMobile ? '75vw' : '450px',
+                height: 'auto',
+                display: 'block',
+              }}
+            />
+          </RetroTV>
         </div>
       )}
 
