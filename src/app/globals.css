@@ -14,7 +14,14 @@
   --link-color: #000000;
 }
 
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
+  position: fixed;
+  width: 100%;
   background-color: var(--bg-color);
   color: var(--text-color);
   font-family: 'Comic Sans MS', 'Comic Sans', cursive;

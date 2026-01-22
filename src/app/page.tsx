@@ -182,6 +182,7 @@ export default function NYC() {
     };
 
     const handleTouchMove = (e: TouchEvent) => {
+      e.preventDefault(); // Prevent iOS Safari rubber-band scrolling
       const touch = e.touches[0];
       setTvPosition({
         x: touch.clientX - dragOffset.x,
@@ -195,7 +196,7 @@ export default function NYC() {
 
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleEnd);
-    window.addEventListener('touchmove', handleTouchMove);
+    window.addEventListener('touchmove', handleTouchMove, { passive: false }); // passive: false required for preventDefault
     window.addEventListener('touchend', handleEnd);
 
     return () => {
@@ -354,7 +355,7 @@ export default function NYC() {
       ref={containerRef}
       style={{
         width: '100vw',
-        height: '100vh',
+        height: '100dvh',
         position: 'relative',
         overflow: 'hidden',
         backgroundColor: '#000',
@@ -400,6 +401,7 @@ export default function NYC() {
               : { top: '20px', right: '20px' }
             ),
             zIndex: 5,
+            touchAction: 'none', // Prevent browser from handling touch gestures
           }}
         >
           <RetroTV onClose={() => setShowSnowfall(false)} borderColor={currentColor} isMobile={isMobile} onDragStart={handleTvDragStart} isDragging={isDraggingTv}>

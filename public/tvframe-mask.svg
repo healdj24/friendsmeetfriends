@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- Black background (hidden) -->
+  <rect width="1024" height="1024" fill="black"/>
+  <!-- White screen area (visible) - adjust these values to match your TV screen -->
+  <rect x="85" y="75" width="855" height="680" rx="30" ry="30" fill="white"/>
+</svg>
