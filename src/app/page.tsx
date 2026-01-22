@@ -48,8 +48,18 @@ export default function NYC() {
   const [colorIndex, setColorIndex] = useState(0);
   const [cornerHit, setCornerHit] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [showSnowfall, setShowSnowfall] = useState(true);
+  const [imageTimestamp, setImageTimestamp] = useState(Date.now());
   const cardRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Refresh snowfall image every hour
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setImageTimestamp(Date.now());
+    }, 60 * 60 * 1000); // 1 hour
+    return () => clearInterval(interval);
+  }, []);
 
   // Calculate velocity with linear interpolation from mobile to desktop
   useEffect(() => {
@@ -222,6 +232,75 @@ export default function NYC() {
       >
         <source src="/casey.mp4" type="video/mp4" />
       </video>
+
+      {/* Snowfall Forecast Banner */}
+      {showSnowfall && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 10,
+            backgroundColor: 'rgba(255, 255, 248, 0.95)',
+            borderBottom: '3px solid #000099',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+            padding: isMobile ? '8px' : '12px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '8px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', maxWidth: '600px' }}>
+            <span
+              style={{
+                fontSize: isMobile ? '10px' : '12px',
+                fontWeight: 'bold',
+                color: '#000099',
+                fontFamily: "Georgia, 'Times New Roman', Times, serif",
+                textTransform: 'uppercase',
+                letterSpacing: '0.1em',
+              }}
+            >
+              ❄️ NYC Snowfall Forecast
+            </span>
+            <button
+              onClick={() => setShowSnowfall(false)}
+              style={{
+                background: 'none',
+                border: 'none',
+                fontSize: '16px',
+                cursor: 'pointer',
+                padding: '0 4px',
+              }}
+              title="Close"
+            >
+              ✕
+            </button>
+          </div>
+          <img
+            src={`https://www.weather.gov/images/okx/winter/StormTotalSnowWeb.png?t=${imageTimestamp}`}
+            alt="NYC Expected Snowfall Forecast"
+            style={{
+              maxWidth: '100%',
+              width: isMobile ? '100%' : '500px',
+              height: 'auto',
+              borderRadius: '4px',
+              border: '1px solid #ccc',
+            }}
+          />
+          <span
+            style={{
+              fontSize: isMobile ? '8px' : '10px',
+              color: '#666',
+              fontFamily: 'Verdana, Arial, sans-serif',
+            }}
+          >
+            Source: NWS New York • Updates hourly
+          </span>
+        </div>
+      )}
 
       {/* Bouncing Card */}
       <div
