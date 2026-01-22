@@ -243,8 +243,8 @@ export default function NYC() {
             transform: 'translate(-50%, -50%)',
             zIndex: 5,
             backgroundColor: 'rgba(255, 255, 248, 0.95)',
-            border: '3px solid #000099',
-            boxShadow: '4px 4px 0px #000099',
+            border: `3px solid ${currentColor}`,
+            boxShadow: `4px 4px 0px ${currentColor}`,
             padding: isMobile ? '12px' : '16px',
             display: 'flex',
             flexDirection: 'column',
@@ -269,7 +269,7 @@ export default function NYC() {
             ✕
           </button>
           <img
-            src={`https://www.weather.gov/images/okx/winter/SnowAmt6hr1.jpg?t=${imageTimestamp}`}
+            src={`https://www.weather.gov/images/okx/winter/StormTotalSnow.jpg?t=${imageTimestamp}`}
             alt="Expected Snowfall"
             style={{
               maxWidth: isMobile ? '85vw' : '500px',
