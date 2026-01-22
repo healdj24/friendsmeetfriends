@@ -138,7 +138,7 @@ export default function Home() {
             color: '#333',
           }}
         >
-          friends who are generally down to clown
+          for those who are generally down to clown
         </p>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center' }}>
