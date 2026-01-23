@@ -62,38 +62,68 @@ function RetroTV({ children, onClose, borderColor, isMobile, onDragStart, isDrag
         </div>
       </div>
 
-      {/* Power button embedded in TV frame */}
-      <button
-        onClick={onClose}
-        style={{
-          position: 'absolute',
-          bottom: '10px',
-          right: '10px',
-          width: '18px',
-          height: '18px',
-          borderRadius: '50%',
-          background: borderColor,
-          border: '2px solid #333',
-          boxShadow: `
-            inset 1px 1px 2px rgba(255,255,255,0.3),
-            inset -1px -1px 2px rgba(0,0,0,0.4),
-            0 1px 3px rgba(0,0,0,0.5)
-          `,
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: 0,
-          transition: 'background 0.3s',
-        }}
-        title="Power off"
-      >
-        {/* Power icon */}
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="3" strokeLinecap="round">
-          <line x1="12" y1="2" x2="12" y2="10" />
-          <path d="M18.4 6.6a9 9 0 1 1-12.8 0" />
-        </svg>
-      </button>
+      {/* LIVE indicator and Power button */}
+      <div style={{
+        position: 'absolute',
+        bottom: '10px',
+        right: '10px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px',
+      }}>
+        {/* LIVE indicator */}
+        <div
+          style={{
+            backgroundColor: '#1a1a1a',
+            padding: '2px 5px',
+            borderRadius: '3px',
+            boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.1)',
+            border: '1px solid #0a0a0a',
+          }}
+        >
+          <span
+            style={{
+              color: '#ff3b3b',
+              fontSize: '7px',
+              fontFamily: "'Arial', sans-serif",
+              fontWeight: 'bold',
+              letterSpacing: '1px',
+              textShadow: '0 0 6px #ff3b3b',
+            }}
+          >
+            LIVE
+          </span>
+        </div>
+        {/* Power button */}
+        <button
+          onClick={onClose}
+          style={{
+            width: '18px',
+            height: '18px',
+            borderRadius: '50%',
+            background: borderColor,
+            border: '2px solid #333',
+            boxShadow: `
+              inset 1px 1px 2px rgba(255,255,255,0.3),
+              inset -1px -1px 2px rgba(0,0,0,0.4),
+              0 1px 3px rgba(0,0,0,0.5)
+            `,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 0,
+            transition: 'background 0.3s',
+          }}
+          title="Power off"
+        >
+          {/* Power icon */}
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="3" strokeLinecap="round">
+            <line x1="12" y1="2" x2="12" y2="10" />
+            <path d="M18.4 6.6a9 9 0 1 1-12.8 0" />
+          </svg>
+        </button>
+      </div>
     </div>
   );
 }
@@ -442,10 +472,6 @@ export default function NYC() {
       {/* Bouncing Card */}
       <div
         ref={cardRef}
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
-        onTouchStart={() => setPaused(true)}
-        onTouchEnd={() => setPaused(false)}
         style={{
           position: 'absolute',
           left: position.x,
@@ -496,6 +522,8 @@ export default function NYC() {
             placeholder="your@email.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            onFocus={() => setPaused(true)}
+            onBlur={() => setPaused(false)}
             required
             style={{
               border: '2px solid',
