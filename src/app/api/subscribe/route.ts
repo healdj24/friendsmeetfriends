@@ -1,5 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { sendEmail } from '@/lib/gmail';
+
+// Auto-welcome email expires: Jan 25, 2026 at 9:00 AM Eastern (14:00 UTC)
+const WELCOME_EMAIL_CUTOFF = new Date('2026-01-25T14:00:00Z');
+
+const WELCOME_SUBJECT = 'SUNDAY. FRIENDS HAVE SLEDS.';
+
+const WELCOME_BODY = `HEY. WE LOVE EVERYBODY THAT GAVE US THEIR EMAIL. WE WANT TO BRING EVERYBODY ALONG FOR MORE FUN THINGS. MORE ON THIS LATER.
+
+NOW, SUNDAY.
+
+FRIENDS HAVE SLEDS.
+FRIENDS HAVE SKIS.
+FRIENDS HAVE CARDBOARD.
+
+A SPECIAL FRIEND HAS A JEEP.
+
+WE'RE SURFING IN THE STREETS OF THE VILLAGE.
+
+DETAILS: WE'RE AWAITING A MORE DETAILED FORECAST TO DETERMINE WHEN THE BEST SKIING WILL TAKE PLACE. OUR CURRENT PLAN IS TO HOST A MAGICAL HANG ON A CORNER IN THE WEST VILLAGE WITH SOME TUNES AND HOT CHOCOLATE, MAYBE NEAR A COZY ISH CAFE, AND DRIVE THE CAR AROUND THERE. EXPECT AN EMAIL TOMORROW AM.`;
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,6 +48,21 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('Supabase error:', error);
       return NextResponse.json({ error: 'Failed to subscribe' }, { status: 500 });
+    }
+
+    // Send welcome email if before cutoff time
+    if (new Date() < WELCOME_EMAIL_CUTOFF) {
+      try {
+        await sendEmail({
+          to: email.toLowerCase(),
+          subject: WELCOME_SUBJECT,
+          text: WELCOME_BODY,
+        });
+        console.log(`Welcome email sent to ${email}`);
+      } catch (emailErr) {
+        // Log but don't fail the subscription if email fails
+        console.error('Failed to send welcome email:', emailErr);
+      }
     }
 
     return NextResponse.json({ success: true });
