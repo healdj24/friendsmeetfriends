@@ -1110,116 +1110,151 @@ function MapComponent() {
           </div>
         </div>
 
-        {/* Buttons Row */}
+        {/* Buttons Row - Black bg, white icons, invert when active */}
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          {/* Plow button */}
           <button
             onClick={loadPlowData}
             disabled={loadingState === 'loading-plow'}
             style={{
-              padding: '6px 10px',
-              background: 'rgba(59, 130, 246, 0.9)',
-              backdropFilter: 'blur(12px)',
-              border: '1px solid rgba(255,255,255,0.1)',
+              padding: '8px 10px',
+              background: plowMatchCount > 0 ? '#fff' : 'rgba(20,20,25,0.95)',
+              border: '1px solid rgba(255,255,255,0.2)',
               borderRadius: 6,
-              color: 'white',
-              fontSize: 11,
-              fontWeight: 600,
               cursor: loadingState === 'loading-plow' ? 'wait' : 'pointer',
               transition: 'all 0.2s',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            {loadingState === 'loading-plow' ? '...' : '❄️ Plow'}
+            {loadingState === 'loading-plow' ? (
+              <span style={{ color: plowMatchCount > 0 ? '#000' : '#fff', fontSize: 12 }}>...</span>
+            ) : (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M2 16h2v2H2v-2zm18-4h2v6h-4v-2h2v-4zM6 12h8l4 4H6v-4zm0 0V8l-4 4h4zm8 0h4V8h-4v4z"
+                  fill={plowMatchCount > 0 ? '#000' : '#fff'}/>
+                <circle cx="7" cy="18" r="2" fill={plowMatchCount > 0 ? '#000' : '#fff'}/>
+                <circle cx="15" cy="18" r="2" fill={plowMatchCount > 0 ? '#000' : '#fff'}/>
+              </svg>
+            )}
           </button>
 
+          {/* Forecast button - Snowflake */}
           <button
-            onClick={fetchSnowForecast}
+            onClick={() => {
+              if (!snowForecast) fetchSnowForecast();
+              setShowForecast(!showForecast);
+            }}
             disabled={forecastLoading}
             style={{
-              padding: '6px 10px',
-              background: snowForecast ? 'rgba(147, 51, 234, 0.9)' : 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(12px)',
-              border: '1px solid rgba(255,255,255,0.1)',
+              padding: '8px 10px',
+              background: showForecast ? '#fff' : 'rgba(20,20,25,0.95)',
+              border: '1px solid rgba(255,255,255,0.2)',
               borderRadius: 6,
-              color: 'white',
-              fontSize: 11,
-              fontWeight: 600,
               cursor: forecastLoading ? 'wait' : 'pointer',
               transition: 'all 0.2s',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            {forecastLoading ? '...' : '🌨️'}
+            {forecastLoading ? (
+              <span style={{ color: showForecast ? '#000' : '#fff', fontSize: 12 }}>...</span>
+            ) : (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill={showForecast ? '#000' : '#fff'}>
+                <path d="M12 2l1.09 3.41L16 4l-1.41 1.09L18 6l-3.41 1.09L16 10l-2.91-1.41L12 12l-1.09-3.41L8 10l1.41-2.91L6 6l3.41-1.09L8 2l2.91 1.41L12 0v2zm0 8l.72 2.28L15 11l-1.28.72L15 14l-2.28-.72L12 16l-.72-2.28L9 15l1.28-2.28L9 11l2.28.72L12 8v2zm-6 6l.54 1.71L8 17l-.96.54L8 19l-1.71-.54L6 20l-.54-1.71L4 19l.96-.54L4 17l1.71.54L6 16zm12 0l.54 1.71L20 17l-.96.54L20 19l-1.71-.54L18 20l-.54-1.71L16 19l.96-.54L16 17l1.71.54L18 16z"/>
+              </svg>
+            )}
           </button>
 
+          {/* Ski mode button */}
           <button
             onClick={toggleSweetSpot}
             style={{
-              padding: '6px 10px',
-              background: sweetSpotMode ? 'rgba(74, 222, 128, 0.9)' : 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(12px)',
-              border: '1px solid rgba(255,255,255,0.1)',
+              padding: '8px 10px',
+              background: sweetSpotMode ? '#fff' : 'rgba(20,20,25,0.95)',
+              border: '1px solid rgba(255,255,255,0.2)',
               borderRadius: 6,
-              color: 'white',
-              fontSize: 11,
-              fontWeight: 600,
               cursor: 'pointer',
               transition: 'all 0.2s',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            {sweetSpotMode ? '🗺️' : '⛷️'}
+            <svg width="18" height="18" viewBox="0 0 24 24" fill={sweetSpotMode ? '#000' : '#fff'}>
+              <circle cx="14" cy="4" r="2"/>
+              <path d="M20 20l-2-2-4 2-6-4-4 2v-2l4-2 4 2.5V12l-4-3-2.5 1-.5-1.5L14 7l2 3v6l2-1 2 2v3z"/>
+            </svg>
           </button>
 
+          {/* Stop signs button - Octagon */}
           <button
             onClick={toggleStopSigns}
             style={{
-              padding: '6px 10px',
-              background: showStopSigns ? 'rgba(220, 38, 38, 0.9)' : 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(12px)',
-              border: '1px solid rgba(255,255,255,0.1)',
+              padding: '8px 10px',
+              background: showStopSigns ? '#fff' : 'rgba(20,20,25,0.95)',
+              border: '1px solid rgba(255,255,255,0.2)',
               borderRadius: 6,
-              color: 'white',
-              fontSize: 11,
-              fontWeight: 600,
               cursor: 'pointer',
               transition: 'all 0.2s',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            🛑
+            <svg width="18" height="18" viewBox="0 0 24 24">
+              <polygon
+                points="7,2 17,2 22,7 22,17 17,22 7,22 2,17 2,7"
+                fill="none"
+                stroke={showStopSigns ? '#000' : '#fff'}
+                strokeWidth="2"
+              />
+            </svg>
           </button>
 
+          {/* Traffic lights button */}
           <button
             onClick={toggleTrafficLights}
             style={{
-              padding: '6px 10px',
-              background: showTrafficLights ? 'rgba(251, 191, 36, 0.9)' : 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(12px)',
-              border: '1px solid rgba(255,255,255,0.1)',
+              padding: '8px 10px',
+              background: showTrafficLights ? '#fff' : 'rgba(20,20,25,0.95)',
+              border: '1px solid rgba(255,255,255,0.2)',
               borderRadius: 6,
-              color: 'white',
-              fontSize: 11,
-              fontWeight: 600,
               cursor: 'pointer',
               transition: 'all 0.2s',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            🚦
+            <svg width="14" height="18" viewBox="0 0 14 22">
+              <rect x="2" y="1" width="10" height="20" rx="2" fill="none" stroke={showTrafficLights ? '#000' : '#fff'} strokeWidth="1.5"/>
+              <circle cx="7" cy="5" r="2" fill="none" stroke={showTrafficLights ? '#000' : '#fff'} strokeWidth="1.5"/>
+              <circle cx="7" cy="11" r="2" fill="none" stroke={showTrafficLights ? '#000' : '#fff'} strokeWidth="1.5"/>
+              <circle cx="7" cy="17" r="2" fill="none" stroke={showTrafficLights ? '#000' : '#fff'} strokeWidth="1.5"/>
+            </svg>
           </button>
 
+          {/* FAQ button */}
           <button
             onClick={() => setShowFaq(true)}
             style={{
-              padding: '6px 10px',
-              background: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(12px)',
-              border: '1px solid rgba(255,255,255,0.1)',
+              padding: '8px 10px',
+              background: 'rgba(20,20,25,0.95)',
+              border: '1px solid rgba(255,255,255,0.2)',
               borderRadius: 6,
-              color: 'white',
-              fontSize: 11,
-              fontWeight: 600,
               cursor: 'pointer',
               transition: 'all 0.2s',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            ?
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
+            </svg>
           </button>
         </div>
       </div>
