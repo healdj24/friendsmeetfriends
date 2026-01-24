@@ -10,6 +10,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  viewportFit: 'cover',  // Required for env(safe-area-inset-bottom) to work
 };
 
 export default function MapsLayout({

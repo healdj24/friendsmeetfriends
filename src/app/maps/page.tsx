@@ -927,8 +927,7 @@ function MapComponent() {
         flexDirection: 'column',
         gap: 8,
         zIndex: 1000,
-        padding: '8px 12px',
-        paddingBottom: 'max(12px, env(safe-area-inset-bottom))',
+        padding: '8px 12px 90px 12px',  /* Extra bottom padding for Safari toolbar */
       }}>
         {/* Snow Forecast Chart - same container so width matches */}
         {showForecast && snowForecast && (
