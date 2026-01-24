@@ -1163,7 +1163,7 @@ function MapComponent() {
               <span style={{ color: showForecast ? '#000' : '#fff', fontSize: 12 }}>...</span>
             ) : (
               <svg width="18" height="18" viewBox="0 0 24 24" fill={showForecast ? '#000' : '#fff'}>
-                <path d="M12 2l1.09 3.41L16 4l-1.41 1.09L18 6l-3.41 1.09L16 10l-2.91-1.41L12 12l-1.09-3.41L8 10l1.41-2.91L6 6l3.41-1.09L8 2l2.91 1.41L12 0v2zm0 8l.72 2.28L15 11l-1.28.72L15 14l-2.28-.72L12 16l-.72-2.28L9 15l1.28-2.28L9 11l2.28.72L12 8v2zm-6 6l.54 1.71L8 17l-.96.54L8 19l-1.71-.54L6 20l-.54-1.71L4 19l.96-.54L4 17l1.71.54L6 16zm12 0l.54 1.71L20 17l-.96.54L20 19l-1.71-.54L18 20l-.54-1.71L16 19l.96-.54L16 17l1.71.54L18 16z"/>
+                <path d="M12 1v4m0 14v4M4.22 4.22l2.83 2.83m9.9 9.9l2.83 2.83M1 12h4m14 0h4M4.22 19.78l2.83-2.83m9.9-9.9l2.83-2.83M12 8a4 4 0 100 8 4 4 0 000-8z" stroke={showForecast ? '#000' : '#fff'} strokeWidth="2" strokeLinecap="round" fill="none"/>
               </svg>
             )}
           </button>
@@ -1184,12 +1184,13 @@ function MapComponent() {
             }}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill={sweetSpotMode ? '#000' : '#fff'}>
-              <circle cx="14" cy="4" r="2"/>
-              <path d="M20 20l-2-2-4 2-6-4-4 2v-2l4-2 4 2.5V12l-4-3-2.5 1-.5-1.5L14 7l2 3v6l2-1 2 2v3z"/>
+              <circle cx="12" cy="4" r="2.5"/>
+              <path d="M6 20l10-4M9.5 13l2.5-4 3 5-1 2M8 10l3 1"/>
+              <line x1="5" y1="21" x2="19" y2="15" stroke={sweetSpotMode ? '#000' : '#fff'} strokeWidth="2" strokeLinecap="round"/>
             </svg>
           </button>
 
-          {/* Stop signs button - Octagon */}
+          {/* Stop signs button - Octagon with STOP */}
           <button
             onClick={toggleStopSigns}
             style={{
@@ -1204,13 +1205,14 @@ function MapComponent() {
               justifyContent: 'center',
             }}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24">
+            <svg width="20" height="20" viewBox="0 0 24 24">
               <polygon
                 points="7,2 17,2 22,7 22,17 17,22 7,22 2,17 2,7"
                 fill="none"
                 stroke={showStopSigns ? '#000' : '#fff'}
-                strokeWidth="2"
+                strokeWidth="1.5"
               />
+              <text x="12" y="13.5" textAnchor="middle" fontSize="6" fontWeight="bold" fill={showStopSigns ? '#000' : '#fff'}>STOP</text>
             </svg>
           </button>
 
