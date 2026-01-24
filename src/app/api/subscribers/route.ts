@@ -13,7 +13,7 @@ export async function GET() {
       return NextResponse.json({ error: 'Failed to fetch subscribers' }, { status: 500 });
     }
 
-    return NextResponse.json({ subscribers: data });
+    return NextResponse.json({ subscribers: data, count: data?.length || 0 });
   } catch (err) {
     console.error('Fetch subscribers error:', err);
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 });
