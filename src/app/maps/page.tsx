@@ -917,15 +917,18 @@ function MapComponent() {
         </div>
       )}
 
-      {/* Legend + Controls - Bottom Left */}
+      {/* Legend + Controls - Bottom, full width on mobile */}
       <div style={{
         position: 'absolute',
-        bottom: 24,
-        left: 16,
+        bottom: 0,
+        left: 0,
+        right: 0,
         display: 'flex',
         flexDirection: 'column',
         gap: 8,
         zIndex: 1000,
+        padding: '8px 12px',
+        paddingBottom: 'max(12px, env(safe-area-inset-bottom))',
       }}>
         {/* Snow Forecast Chart - same container so width matches */}
         {showForecast && snowForecast && (
@@ -1111,16 +1114,17 @@ function MapComponent() {
         </div>
 
         {/* Buttons Row - Black bg, white icons, invert when active */}
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 6, justifyContent: 'space-between' }}>
           {/* Plow button */}
           <button
             onClick={loadPlowData}
             disabled={loadingState === 'loading-plow'}
             style={{
-              padding: '8px 10px',
+              flex: 1,
+              padding: '12px 10px',
               background: plowMatchCount > 0 ? '#fff' : 'rgba(20,20,25,0.95)',
               border: '1px solid rgba(255,255,255,0.2)',
-              borderRadius: 6,
+              borderRadius: 8,
               cursor: loadingState === 'loading-plow' ? 'wait' : 'pointer',
               transition: 'all 0.2s',
               display: 'flex',
@@ -1148,10 +1152,11 @@ function MapComponent() {
             }}
             disabled={forecastLoading}
             style={{
-              padding: '8px 10px',
+              flex: 1,
+              padding: '12px 10px',
               background: showForecast ? '#fff' : 'rgba(20,20,25,0.95)',
               border: '1px solid rgba(255,255,255,0.2)',
-              borderRadius: 6,
+              borderRadius: 8,
               cursor: forecastLoading ? 'wait' : 'pointer',
               transition: 'all 0.2s',
               display: 'flex',
@@ -1172,10 +1177,11 @@ function MapComponent() {
           <button
             onClick={toggleSweetSpot}
             style={{
-              padding: '8px 10px',
+              flex: 1,
+              padding: '12px 10px',
               background: sweetSpotMode ? '#fff' : 'rgba(20,20,25,0.95)',
               border: '1px solid rgba(255,255,255,0.2)',
-              borderRadius: 6,
+              borderRadius: 8,
               cursor: 'pointer',
               transition: 'all 0.2s',
               display: 'flex',
@@ -1194,10 +1200,11 @@ function MapComponent() {
           <button
             onClick={toggleStopSigns}
             style={{
-              padding: '8px 10px',
+              flex: 1,
+              padding: '12px 10px',
               background: showStopSigns ? '#fff' : 'rgba(20,20,25,0.95)',
               border: '1px solid rgba(255,255,255,0.2)',
-              borderRadius: 6,
+              borderRadius: 8,
               cursor: 'pointer',
               transition: 'all 0.2s',
               display: 'flex',
@@ -1220,10 +1227,11 @@ function MapComponent() {
           <button
             onClick={toggleTrafficLights}
             style={{
-              padding: '8px 10px',
+              flex: 1,
+              padding: '12px 10px',
               background: showTrafficLights ? '#fff' : 'rgba(20,20,25,0.95)',
               border: '1px solid rgba(255,255,255,0.2)',
-              borderRadius: 6,
+              borderRadius: 8,
               cursor: 'pointer',
               transition: 'all 0.2s',
               display: 'flex',
@@ -1243,10 +1251,11 @@ function MapComponent() {
           <button
             onClick={() => setShowFaq(true)}
             style={{
-              padding: '8px 10px',
+              flex: 1,
+              padding: '12px 10px',
               background: 'rgba(20,20,25,0.95)',
               border: '1px solid rgba(255,255,255,0.2)',
-              borderRadius: 6,
+              borderRadius: 8,
               cursor: 'pointer',
               transition: 'all 0.2s',
               display: 'flex',
