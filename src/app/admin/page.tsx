@@ -141,7 +141,7 @@ export default function TestEmailPage() {
       )}
 
       <p style={{ marginTop: '40px', color: '#666', fontSize: '12px' }}>
-        From: fun@fdft.com (via Gmail OAuth)
+        From: fun@fdft.net (via Gmail OAuth)
       </p>
     </div>
   );
