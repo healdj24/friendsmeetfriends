@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { resend } from '@/lib/resend';
+import { sendBatchEmails } from '@/lib/gmail';
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,26 +24,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No subscribers' }, { status: 400 });
     }
 
-    // Send email to each subscriber
-    // Note: For production, you'd want to use batch sending or a queue
-    const fromEmail = process.env.FROM_EMAIL || 'hello@yourdomain.com';
-
     const emails = subscribers.map((sub) => sub.email);
 
-    // Resend supports batch sending up to 100 emails
-    const { error: sendError } = await resend.emails.send({
-      from: fromEmail,
-      to: emails,
-      subject: subject,
-      text: body,
+    // Send emails individually via Gmail OAuth
+    const results = await sendBatchEmails(emails, subject, body);
+
+    const successCount = results.filter((r) => r.success).length;
+    const failedCount = results.filter((r) => !r.success).length;
+
+    return NextResponse.json({
+      success: true,
+      count: successCount,
+      failed: failedCount,
+      results,
     });
-
-    if (sendError) {
-      console.error('Resend error:', sendError);
-      return NextResponse.json({ error: 'Failed to send emails' }, { status: 500 });
-    }
-
-    return NextResponse.json({ success: true, count: subscribers.length });
   } catch (err) {
     console.error('Send error:', err);
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 });
