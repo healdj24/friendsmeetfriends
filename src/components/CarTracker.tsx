@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import 'leaflet/dist/leaflet.css';
 
 interface CarLocation {
   latitude: number;
@@ -65,7 +66,7 @@ export default function CarTracker() {
 
     const initMap = async () => {
       const L = (await import('leaflet')).default;
-      await import('leaflet/dist/leaflet.css');
+      // CSS is imported at top of maps/page.tsx - leaflet styles shared
 
       if (!mapRef.current) {
         const map = L.map(mapContainerRef.current!, {
