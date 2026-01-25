@@ -153,7 +153,6 @@ export default function DriverPage() {
 
   return (
     <div style={{
-      minHeight: '100vh',
       minHeight: '100dvh',
       background: sharing ? '#0a0a0a' : '#000',
       color: '#fff',
