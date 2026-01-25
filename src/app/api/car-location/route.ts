@@ -1,18 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
-// Simple password for driver mode (set in env or use default for now)
-const DRIVER_PASSWORD = process.env.DRIVER_PASSWORD || 'snowday2026';
-
 // POST - Update car location (driver only)
 export async function POST(request: NextRequest) {
   try {
-    const { latitude, longitude, password, is_active } = await request.json();
-
-    // Verify password
-    if (password !== DRIVER_PASSWORD) {
-      return NextResponse.json({ error: 'Invalid password' }, { status: 401 });
-    }
+    const { latitude, longitude, is_active } = await request.json();
 
     // Upsert location (always update the single row with id=1)
     const { error } = await supabase

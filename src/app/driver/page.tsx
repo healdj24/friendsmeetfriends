@@ -3,21 +3,32 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 export default function DriverPage() {
-  const [password, setPassword] = useState('');
-  const [authenticated, setAuthenticated] = useState(false);
   const [sharing, setSharing] = useState(false);
   const [status, setStatus] = useState<'idle' | 'starting' | 'active' | 'error'>('idle');
-  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
-  const [currentLocation, setCurrentLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [updateCount, setUpdateCount] = useState(0);
 
   const watchIdRef = useRef<number | null>(null);
-  const passwordRef = useRef('');
+  const wakeLockRef = useRef<WakeLockSentinel | null>(null);
 
-  // Keep password ref in sync
-  useEffect(() => {
-    passwordRef.current = password;
-  }, [password]);
+  // Request wake lock to keep screen on
+  const requestWakeLock = async () => {
+    try {
+      if ('wakeLock' in navigator) {
+        wakeLockRef.current = await navigator.wakeLock.request('screen');
+      }
+    } catch (err) {
+      console.log('Wake lock not available:', err);
+    }
+  };
+
+  // Release wake lock
+  const releaseWakeLock = () => {
+    if (wakeLockRef.current) {
+      wakeLockRef.current.release();
+      wakeLockRef.current = null;
+    }
+  };
 
   // Send location to server
   const sendLocation = useCallback(async (lat: number, lng: number) => {
@@ -28,7 +39,6 @@ export default function DriverPage() {
         body: JSON.stringify({
           latitude: lat,
           longitude: lng,
-          password: passwordRef.current,
           is_active: true,
         }),
       });
@@ -38,17 +48,16 @@ export default function DriverPage() {
         throw new Error(data.error || 'Failed to update');
       }
 
-      setLastUpdate(new Date());
-      setCurrentLocation({ lat, lng });
       setStatus('active');
+      setUpdateCount(c => c + 1);
     } catch (err) {
       console.error('Failed to send location:', err);
-      setErrorMsg(err instanceof Error ? err.message : 'Failed to send location');
+      setErrorMsg(err instanceof Error ? err.message : 'Failed to send');
     }
   }, []);
 
   // Start sharing location
-  const startSharing = useCallback(() => {
+  const startSharing = useCallback(async () => {
     if (!navigator.geolocation) {
       setErrorMsg('Geolocation not supported');
       return;
@@ -57,7 +66,9 @@ export default function DriverPage() {
     setStatus('starting');
     setErrorMsg('');
 
-    // Watch position continuously
+    // Keep screen on
+    await requestWakeLock();
+
     const watchId = navigator.geolocation.watchPosition(
       (position) => {
         sendLocation(position.coords.latitude, position.coords.longitude);
@@ -67,22 +78,22 @@ export default function DriverPage() {
         setStatus('error');
         switch (error.code) {
           case error.PERMISSION_DENIED:
-            setErrorMsg('Location permission denied. Please enable in settings.');
+            setErrorMsg('Location permission denied');
             break;
           case error.POSITION_UNAVAILABLE:
             setErrorMsg('Location unavailable');
             break;
           case error.TIMEOUT:
-            setErrorMsg('Location request timed out');
+            setErrorMsg('Location timed out');
             break;
           default:
-            setErrorMsg('Unknown error getting location');
+            setErrorMsg('Unknown error');
         }
       },
       {
         enableHighAccuracy: true,
         timeout: 10000,
-        maximumAge: 0, // Always get fresh location
+        maximumAge: 0,
       }
     );
 
@@ -97,15 +108,15 @@ export default function DriverPage() {
       watchIdRef.current = null;
     }
 
-    // Mark as inactive in database
+    releaseWakeLock();
+
     try {
       await fetch('/api/car-location', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          latitude: currentLocation?.lat || 0,
-          longitude: currentLocation?.lng || 0,
-          password: passwordRef.current,
+          latitude: 0,
+          longitude: 0,
           is_active: false,
         }),
       });
@@ -115,7 +126,8 @@ export default function DriverPage() {
 
     setSharing(false);
     setStatus('idle');
-  }, [currentLocation]);
+    setUpdateCount(0);
+  }, []);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -123,73 +135,27 @@ export default function DriverPage() {
       if (watchIdRef.current !== null) {
         navigator.geolocation.clearWatch(watchIdRef.current);
       }
+      releaseWakeLock();
     };
   }, []);
 
-  // Password screen
-  if (!authenticated) {
-    return (
-      <div style={{
-        minHeight: '100vh',
-        background: '#000',
-        color: '#fff',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif',
-        padding: 20,
-      }}>
-        <h1 style={{ fontSize: 24, marginBottom: 8 }}>Driver Mode</h1>
-        <p style={{ color: '#888', marginBottom: 24 }}>Enter password to start sharing location</p>
+  // Re-acquire wake lock if released (e.g., tab switch on some browsers)
+  useEffect(() => {
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'visible' && sharing) {
+        await requestWakeLock();
+      }
+    };
 
-        <form onSubmit={(e) => {
-          e.preventDefault();
-          setAuthenticated(true);
-        }}>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-            style={{
-              padding: '12px 16px',
-              fontSize: 16,
-              background: '#222',
-              border: '1px solid #444',
-              borderRadius: 8,
-              color: '#fff',
-              width: 200,
-              marginBottom: 16,
-            }}
-          />
-          <br />
-          <button
-            type="submit"
-            disabled={!password}
-            style={{
-              padding: '12px 32px',
-              fontSize: 16,
-              background: password ? '#22C55E' : '#444',
-              border: 'none',
-              borderRadius: 8,
-              color: '#fff',
-              cursor: password ? 'pointer' : 'not-allowed',
-              fontWeight: 600,
-            }}
-          >
-            Enter
-          </button>
-        </form>
-      </div>
-    );
-  }
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [sharing]);
 
-  // Main driver interface
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#000',
+      minHeight: '100dvh',
+      background: sharing ? '#0a0a0a' : '#000',
       color: '#fff',
       display: 'flex',
       flexDirection: 'column',
@@ -197,97 +163,123 @@ export default function DriverPage() {
       justifyContent: 'center',
       fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif',
       padding: 20,
-      textAlign: 'center',
+      transition: 'background 0.3s',
     }}>
-      <h1 style={{ fontSize: 28, marginBottom: 8 }}>
-        {sharing ? '📍 Sharing Location' : '🚗 Driver Mode'}
-      </h1>
 
+      {/* Active indicator */}
       {status === 'active' && (
         <div style={{
-          background: '#22C55E',
-          padding: '4px 12px',
-          borderRadius: 20,
-          fontSize: 12,
-          marginBottom: 24,
+          background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+          padding: '8px 20px',
+          borderRadius: 50,
+          fontSize: 14,
+          fontWeight: 700,
+          marginBottom: 32,
           display: 'flex',
           alignItems: 'center',
-          gap: 6,
+          gap: 10,
+          boxShadow: '0 4px 20px rgba(16, 185, 129, 0.4)',
         }}>
           <span style={{
-            width: 8,
-            height: 8,
+            width: 10,
+            height: 10,
             background: '#fff',
             borderRadius: '50%',
             animation: 'pulse 1s infinite',
           }} />
-          LIVE
+          SHARING
         </div>
       )}
 
-      {currentLocation && sharing && (
-        <p style={{ color: '#888', fontSize: 14, marginBottom: 8 }}>
-          {currentLocation.lat.toFixed(6)}, {currentLocation.lng.toFixed(6)}
-        </p>
-      )}
-
-      {lastUpdate && sharing && (
-        <p style={{ color: '#666', fontSize: 12, marginBottom: 24 }}>
-          Last update: {lastUpdate.toLocaleTimeString()}
+      {/* Update counter */}
+      {sharing && updateCount > 0 && (
+        <p style={{
+          color: '#666',
+          fontSize: 13,
+          marginBottom: 24,
+          fontVariantNumeric: 'tabular-nums',
+        }}>
+          {updateCount} updates sent
         </p>
       )}
 
       {errorMsg && (
-        <p style={{ color: '#EF4444', marginBottom: 24, fontSize: 14 }}>
+        <p style={{ color: '#EF4444', marginBottom: 20, fontSize: 14 }}>
           {errorMsg}
         </p>
       )}
 
+      {/* Big button */}
       {!sharing ? (
         <button
           onClick={startSharing}
           disabled={status === 'starting'}
           style={{
-            padding: '20px 48px',
-            fontSize: 20,
-            background: status === 'starting' ? '#444' : '#22C55E',
+            width: 200,
+            height: 200,
+            borderRadius: '50%',
+            fontSize: 28,
+            background: status === 'starting'
+              ? '#333'
+              : 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
             border: 'none',
-            borderRadius: 16,
             color: '#fff',
             cursor: status === 'starting' ? 'wait' : 'pointer',
-            fontWeight: 700,
-            boxShadow: '0 4px 20px rgba(34, 197, 94, 0.4)',
+            fontWeight: 800,
+            boxShadow: status === 'starting'
+              ? 'none'
+              : '0 0 80px rgba(16, 185, 129, 0.5), 0 8px 32px rgba(0,0,0,0.3)',
+            transition: 'all 0.3s',
+            letterSpacing: '1px',
           }}
         >
-          {status === 'starting' ? 'Starting...' : 'Start Sharing'}
+          {status === 'starting' ? '...' : 'START'}
         </button>
       ) : (
         <button
           onClick={stopSharing}
           style={{
-            padding: '20px 48px',
-            fontSize: 20,
-            background: '#EF4444',
+            width: 200,
+            height: 200,
+            borderRadius: '50%',
+            fontSize: 28,
+            background: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
             border: 'none',
-            borderRadius: 16,
             color: '#fff',
             cursor: 'pointer',
-            fontWeight: 700,
-            boxShadow: '0 4px 20px rgba(239, 68, 68, 0.4)',
+            fontWeight: 800,
+            boxShadow: '0 0 80px rgba(239, 68, 68, 0.5), 0 8px 32px rgba(0,0,0,0.3)',
+            animation: 'breathe 3s ease-in-out infinite',
+            letterSpacing: '1px',
           }}
         >
-          Stop Sharing
+          STOP
         </button>
       )}
 
-      <p style={{ color: '#666', fontSize: 12, marginTop: 40, maxWidth: 280 }}>
-        Keep this page open while driving. Location updates every few seconds.
+      {/* Instructions */}
+      <p style={{
+        color: '#555',
+        fontSize: 13,
+        marginTop: 48,
+        textAlign: 'center',
+        maxWidth: 280,
+        lineHeight: 1.6,
+      }}>
+        {sharing
+          ? 'Keep this page open. You can lock your phone or switch apps.'
+          : 'Tap START to begin sharing your location.'
+        }
       </p>
 
       <style>{`
         @keyframes pulse {
           0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
+          50% { opacity: 0.4; }
+        }
+        @keyframes breathe {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.02); }
         }
       `}</style>
     </div>

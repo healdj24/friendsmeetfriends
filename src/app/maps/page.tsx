@@ -917,18 +917,31 @@ function MapComponent() {
         </div>
       )}
 
-      {/* Legend + Controls - Bottom, full width on mobile */}
-      <div style={{
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 8,
-        zIndex: 1000,
-        padding: '8px 12px 90px 12px',  /* Extra bottom padding for Safari toolbar */
-      }}>
+      {/* Legend + Controls - Bottom left, fixed width */}
+      <style>{`
+        .map-controls {
+          padding-bottom: 90px !important;
+        }
+        @media (min-width: 768px) {
+          .map-controls {
+            padding-bottom: 12px !important;
+          }
+        }
+      `}</style>
+      <div
+        className="map-controls"
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 8,
+          zIndex: 1000,
+          padding: '8px 12px 12px 12px',
+          width: 'fit-content',
+          maxWidth: 320,
+        }}>
         {/* Snow Forecast Chart - same container so width matches */}
         {showForecast && snowForecast && (
           <div style={{
@@ -1113,7 +1126,7 @@ function MapComponent() {
         </div>
 
         {/* Buttons Row - Black bg, white icons, invert when active */}
-        <div style={{ display: 'flex', gap: 6, justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
           {/* Plow button */}
           <button
             onClick={loadPlowData}

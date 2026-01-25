@@ -163,7 +163,7 @@ export default function NYC() {
   const [colorIndex, setColorIndex] = useState(0);
   const [cornerHit, setCornerHit] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [showSnowfall, setShowSnowfall] = useState(true);
+  const [showSnowfall, setShowSnowfall] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
   const snowfallImgRef = useRef<HTMLImageElement>(null);
   const [tvPosition, setTvPosition] = useState<{ x: number; y: number } | null>(null);
