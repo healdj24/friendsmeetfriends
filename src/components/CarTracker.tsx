@@ -39,13 +39,25 @@ export default function CarTracker() {
     return () => clearInterval(interval);
   }, [fetchLocation]);
 
-  // Auto-open modal when driver is active (first time only)
+  // Calculate if location is "live" (updated within 5 minutes)
+  const getTimeSinceUpdate = (timestamp: string) => {
+    const seconds = Math.floor((Date.now() - new Date(timestamp).getTime()) / 1000);
+    if (seconds < 60) return { isLive: true, text: 'LIVE' };
+    if (seconds < 300) return { isLive: true, text: 'LIVE' }; // Under 5 min = live
+    if (seconds < 3600) return { isLive: false, text: `Updated ${Math.floor(seconds / 60)}m ago` };
+    if (seconds < 86400) return { isLive: false, text: `Updated ${Math.floor(seconds / 3600)}h ago` };
+    return { isLive: false, text: `Updated ${Math.floor(seconds / 86400)}d ago` };
+  };
+
+  const timeStatus = location?.updated_at ? getTimeSinceUpdate(location.updated_at) : null;
+
+  // Auto-open modal when we have location data (first time only)
   useEffect(() => {
-    if (location?.is_active && !hasAutoOpened) {
+    if (location?.latitude && !hasAutoOpened) {
       setShowModal(true);
       setHasAutoOpened(true);
     }
-  }, [location?.is_active, hasAutoOpened]);
+  }, [location?.latitude, hasAutoOpened]);
 
   // Initialize/update map when modal opens or location changes
   useEffect(() => {
@@ -112,8 +124,8 @@ export default function CarTracker() {
     }
   }, [showModal]);
 
-  // Don't render anything if car is not active
-  if (!location?.is_active) {
+  // Don't render if we have no location data at all
+  if (!location?.latitude) {
     return null;
   }
 
@@ -128,7 +140,9 @@ export default function CarTracker() {
             bottom: 24,
             left: 24,
             zIndex: 100,
-            background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+            background: timeStatus?.isLive
+              ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)'
+              : 'linear-gradient(135deg, #4B5563 0%, #374151 100%)',
             border: 'none',
             borderRadius: 50,
             padding: '14px 20px',
@@ -136,31 +150,33 @@ export default function CarTracker() {
             alignItems: 'center',
             gap: 10,
             cursor: 'pointer',
-            boxShadow: '0 4px 24px rgba(16, 185, 129, 0.4), 0 2px 8px rgba(0,0,0,0.2)',
+            boxShadow: timeStatus?.isLive
+              ? '0 4px 24px rgba(16, 185, 129, 0.4), 0 2px 8px rgba(0,0,0,0.2)'
+              : '0 4px 24px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0,0,0,0.2)',
             fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif',
             transition: 'transform 0.2s, box-shadow 0.2s',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'scale(1.05)';
-            e.currentTarget.style.boxShadow = '0 6px 32px rgba(16, 185, 129, 0.5), 0 4px 12px rgba(0,0,0,0.3)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = 'scale(1)';
-            e.currentTarget.style.boxShadow = '0 4px 24px rgba(16, 185, 129, 0.4), 0 2px 8px rgba(0,0,0,0.2)';
           }}
         >
           <span style={{ fontSize: 22 }}>🚗</span>
-          <span style={{ color: '#fff', fontWeight: 700, fontSize: 15, letterSpacing: '0.5px' }}>
-            LIVE
+          <span style={{ color: '#fff', fontWeight: 700, fontSize: 14 }}>
+            {timeStatus?.isLive ? 'LIVE' : 'Last Location'}
           </span>
-          <span style={{
-            width: 10,
-            height: 10,
-            background: '#fff',
-            borderRadius: '50%',
-            animation: 'pulse 1.5s ease-in-out infinite',
-            boxShadow: '0 0 8px rgba(255,255,255,0.8)',
-          }} />
+          {timeStatus?.isLive && (
+            <span style={{
+              width: 10,
+              height: 10,
+              background: '#fff',
+              borderRadius: '50%',
+              animation: 'pulse 1.5s ease-in-out infinite',
+              boxShadow: '0 0 8px rgba(255,255,255,0.8)',
+            }} />
+          )}
         </button>
       )}
 
@@ -206,37 +222,43 @@ export default function CarTracker() {
               }}
             />
 
-            {/* LIVE badge - top center, prominent */}
+            {/* Status badge - top center */}
             <div style={{
               position: 'absolute',
               top: 20,
               left: '50%',
               transform: 'translateX(-50%)',
-              background: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
+              background: timeStatus?.isLive
+                ? 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)'
+                : 'linear-gradient(135deg, #374151 0%, #1F2937 100%)',
               padding: '10px 24px',
               borderRadius: 50,
               display: 'flex',
               alignItems: 'center',
               gap: 10,
               zIndex: 1001,
-              boxShadow: '0 4px 20px rgba(239, 68, 68, 0.4), 0 2px 8px rgba(0,0,0,0.2)',
+              boxShadow: timeStatus?.isLive
+                ? '0 4px 20px rgba(239, 68, 68, 0.4), 0 2px 8px rgba(0,0,0,0.2)'
+                : '0 4px 20px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0,0,0,0.2)',
             }}>
-              <span style={{
-                width: 10,
-                height: 10,
-                background: '#fff',
-                borderRadius: '50%',
-                animation: 'pulse 1s ease-in-out infinite',
-                boxShadow: '0 0 12px rgba(255,255,255,0.8)',
-              }} />
+              {timeStatus?.isLive && (
+                <span style={{
+                  width: 10,
+                  height: 10,
+                  background: '#fff',
+                  borderRadius: '50%',
+                  animation: 'pulse 1s ease-in-out infinite',
+                  boxShadow: '0 0 12px rgba(255,255,255,0.8)',
+                }} />
+              )}
               <span style={{
                 color: '#fff',
-                fontSize: 15,
-                fontWeight: 800,
-                letterSpacing: '2px',
+                fontSize: timeStatus?.isLive ? 15 : 13,
+                fontWeight: timeStatus?.isLive ? 800 : 600,
+                letterSpacing: timeStatus?.isLive ? '2px' : '0.5px',
                 fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif',
               }}>
-                LIVE
+                {timeStatus?.text || 'LIVE'}
               </span>
             </div>
 
