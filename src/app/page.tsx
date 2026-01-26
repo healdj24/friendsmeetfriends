@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import CarTracker from '@/components/CarTracker';
+// Car tracker temporarily disabled
+// import CarTracker from '@/components/CarTracker';
 
 const COLORS = ['#990000', '#006600', '#000099', '#996600', '#660066', '#009999'];
 
@@ -589,8 +590,8 @@ export default function NYC() {
         )}
       </div>
 
-      {/* Car Tracker - shows when Jeep is sharing location */}
-      <CarTracker />
+      {/* Car Tracker - temporarily disabled */}
+      {/* <CarTracker /> */}
 
       <style>{`
         @keyframes pulse {
