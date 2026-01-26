@@ -293,6 +293,8 @@ export default function NYC() {
         setStatus('success');
         setMessage('You\'re in!');
         setEmail('');
+        // Resume animation after success
+        setTimeout(() => setPaused(false), 2000);
       } else {
         setStatus('error');
         setMessage(data.error || 'Something went wrong');
@@ -525,7 +527,10 @@ export default function NYC() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             onFocus={() => setPaused(true)}
-            onBlur={() => setPaused(false)}
+            onBlur={() => {
+              // Only unpause if email is empty (user abandoned)
+              if (!email) setPaused(false);
+            }}
             required
             style={{
               border: '2px solid',
